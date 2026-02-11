@@ -1,0 +1,53 @@
+---
+// Footer — branding, link columns, copyright
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-brand-dark text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Brand column -->
+      <div class="space-y-4">
+        <span class="text-2xl font-serif font-bold">Pet & Paint</span>
+        <p class="text-white/70 text-sm">
+          Celebrating the bond between pets and their people through custom wearable art and creative kits.
+        </p>
+      </div>
+
+      <!-- Shop column -->
+      <div>
+        <h4 class="font-semibold mb-4">Shop</h4>
+        <ul class="space-y-2 text-white/70 text-sm">
+          <li><a href="#" class="hover:text-white transition-colors">Custom Hoodies</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Paint by Number Kits</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Gift Cards</a></li>
+        </ul>
+      </div>
+
+      <!-- Company column -->
+      <div>
+        <h4 class="font-semibold mb-4">Company</h4>
+        <ul class="space-y-2 text-white/70 text-sm">
+          <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Our Mission</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Connect column -->
+      <div>
+        <h4 class="font-semibold mb-4">Connect</h4>
+        <ul class="space-y-2 text-white/70 text-sm">
+          <li><a href="#" class="hover:text-white transition-colors">Instagram</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Facebook</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-white/20 mt-8 pt-8 text-center text-white/50 text-sm">
+      &copy; {currentYear} Pet & Paint. All rights reserved.
+    </div>
+  </div>
+</footer>

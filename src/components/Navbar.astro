@@ -1,0 +1,51 @@
+---
+// Navbar component — sticky top navigation with mobile hamburger menu
+---
+
+<header class="w-full bg-brand-white shadow-sm sticky top-0 z-50">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2">
+      <svg class="w-8 h-8 text-brand-brown" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4.5-2c-.83 0-1.5.67-1.5 1.5S6.67 11 7.5 11 9 10.33 9 9.5 8.33 8 7.5 8zm9 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5S17.33 8 16.5 8zm-4.5-4c-.83 0-1.5.67-1.5 1.5S11.17 7 12 7s1.5-.67 1.5-1.5S12.83 4 12 4zm0 12c-2.21 0-4 1.12-4 2.5S9.79 21 12 21s4-1.12 4-2.5S14.21 16 12 16z"/>
+      </svg>
+      <span class="text-xl font-serif font-bold text-brand-brown">Pet & Paint</span>
+    </a>
+
+    <!-- Desktop Nav Links -->
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#categories" class="text-brand-brown hover:text-brand-orange transition-colors">Shop</a>
+      <a href="#mission" class="text-brand-brown hover:text-brand-orange transition-colors">Our Mission</a>
+      <a href="#how-it-works" class="text-brand-brown hover:text-brand-orange transition-colors">How It Works</a>
+      <a href="#categories" class="bg-brand-brown text-white px-5 py-2 rounded-full hover:bg-brand-orange transition-colors">
+        Shop Now
+      </a>
+    </div>
+
+    <!-- Mobile hamburger button -->
+    <button
+      id="mobile-menu-btn"
+      class="md:hidden p-2 text-brand-brown"
+      aria-label="Toggle menu"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </nav>
+
+  <!-- Mobile menu (hidden by default) -->
+  <div id="mobile-menu" class="hidden md:hidden px-4 pb-4 space-y-2">
+    <a href="#categories" class="block py-2 text-brand-brown hover:text-brand-orange">Shop</a>
+    <a href="#mission" class="block py-2 text-brand-brown hover:text-brand-orange">Our Mission</a>
+    <a href="#how-it-works" class="block py-2 text-brand-brown hover:text-brand-orange">How It Works</a>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>
