@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+const hoodies = [
+  { name: 'Custom Pet Portrait Hoodie', price: '$59.99', image: '/products/hoodie-1.png' },
+  { name: 'Signature Pet Watercolor Hoodie', price: '$64.99', image: '/products/hoodie-2.png' },
+  { name: 'Minimalist Pet Sketch Hoodie', price: '$54.99', image: '/products/hoodie-3.png' },
+  { name: 'Pet "Washed Out" Hoodie', price: '$59.99', image: '/products/hoodie-4.png' },
+];
+
+const paintKits = [
+  { name: 'Custom Pet Oil Painting Kit', price: '$39.99', image: '/products/kit-1.png' },
+  { name: 'Signature Watercolor Kit', price: '$34.99', image: '/products/kit-2.png' },
+  { name: 'Pet Pop Art Kit', price: '$37.99', image: '/products/kit-3.png' },
+  { name: 'Pet "Washed Out" Kit', price: '$35.99', image: '/products/kit-4.png' },
+];
+---
+
+<Layout title="Shop — Pet & Paint">
+  <Navbar />
+  <main>
+    <!-- Hero Split Banner -->
+    <section class="bg-brand-white">
+      <div class="max-w-7xl mx-auto grid md:grid-cols-2">
+        <!-- Paint Your Pet -->
+        <div class="relative overflow-hidden">
+          <div class="aspect-[4/3] md:aspect-auto md:h-[480px] bg-brand-cream flex items-center">
+            <img
+              src="/public/paint-your-pet.png"
+              alt="Paint your pet"
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+            <div class="relative z-10 p-8 md:p-12">
+              <h1 class="text-3xl md:text-4xl font-serif font-bold text-white drop-shadow-lg">Paint Your Pet</h1>
+              <p class="mt-2 text-white/90 drop-shadow max-w-xs">Turn your favorite photo into a relaxing paint-by-number experience.</p>
+              <a href="#paint-kits" class="mt-4 inline-block bg-brand-white text-brand-brown px-6 py-2.5 rounded-full font-semibold hover:bg-brand-cream transition-colors shadow">
+                Shop Paint Kits
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Wear Your Pet -->
+        <div class="relative overflow-hidden">
+          <div class="aspect-[4/3] md:aspect-auto md:h-[480px] bg-brand-cream flex items-center">
+            <img
+              src="/public/wear-your-pet.png"
+              alt="Wear your pet"
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+            <div class="relative z-10 p-8 md:p-12 md:ml-auto text-right">
+              <h1 class="text-3xl md:text-4xl font-serif font-bold text-white drop-shadow-lg">Wear Your Pet</h1>
+              <p class="mt-2 text-white/90 drop-shadow max-w-xs ml-auto">Custom pet portrait hoodies you'll never want to take off.</p>
+              <a href="#hoodies" class="mt-4 inline-block bg-brand-brown text-white px-6 py-2.5 rounded-full font-semibold hover:bg-brand-orange transition-colors shadow">
+                Shop Hoodies
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hoodies Section -->
+    <section id="hoodies" class="py-16 md:py-24 bg-brand-cream">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-brown text-center">Our Best Sellers — Hoodies</h2>
+        <p class="mt-3 text-center text-brand-brown/70 max-w-2xl mx-auto">Custom pet portrait hoodies, designed just for you.</p>
+        <div class="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {hoodies.map((product) => (
+            <div class="bg-brand-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <div class="aspect-square bg-brand-cream">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div class="p-4">
+                <h3 class="text-sm font-semibold text-brand-brown leading-tight">{product.name}</h3>
+                <p class="mt-1 text-brand-orange font-bold">{product.price}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Paint Kits Section -->
+    <section id="paint-kits" class="py-16 md:py-24 bg-brand-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-brown text-center">Our Best Sellers — Paint Kits</h2>
+        <p class="mt-3 text-center text-brand-brown/70 max-w-2xl mx-auto">Everything you need to paint a masterpiece of your furry friend.</p>
+        <div class="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {paintKits.map((product) => (
+            <div class="bg-brand-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <div class="aspect-square bg-brand-cream">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div class="p-4">
+                <h3 class="text-sm font-semibold text-brand-brown leading-tight">{product.name}</h3>
+                <p class="mt-1 text-brand-orange font-bold">{product.price}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>

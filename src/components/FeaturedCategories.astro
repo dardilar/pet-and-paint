@@ -1,19 +1,5 @@
 ---
 // Featured Categories — two product category cards
-const categories = [
-  {
-    title: 'Custom Pet Hoodies',
-    description: 'Wear your pet proudly with our custom-designed hoodies featuring your furry friend.',
-    placeholder: 'Hoodie image',
-    href: '#',
-  },
-  {
-    title: 'Pet Paint by Number Kits',
-    description: 'Create a masterpiece of your pet with our easy-to-follow paint-by-number kits.',
-    placeholder: 'Paint kit image',
-    href: '#',
-  },
-];
 ---
 
 <section id="categories" class="bg-brand-white py-16 md:py-24">
@@ -23,21 +9,37 @@ const categories = [
     </h2>
 
     <div class="grid md:grid-cols-2 gap-8">
-      {categories.map((cat) => (
-        <a href={cat.href} class="group block bg-brand-cream rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-          <!-- Image placeholder -->
-          <div class="aspect-4/3 bg-brand-tan flex items-center justify-center">
-            <p class="text-brand-brown/40 text-sm">{cat.placeholder}</p>
-          </div>
-          <!-- Card text -->
-          <div class="p-6">
-            <h3 class="text-xl font-serif font-bold text-brand-brown group-hover:text-brand-orange transition-colors">
-              {cat.title}
-            </h3>
-            <p class="mt-2 text-brand-brown/70">{cat.description}</p>
-          </div>
-        </a>
-      ))}
+      <!-- Custom Pet Hoodies -->
+      <div class="group block bg-brand-cream rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="aspect-4/3 bg-brand-tan flex items-center justify-center">
+          <img src="/custom-hoddie.png" alt="Custom Pet Hoodies" class="w-full h-full object-cover" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-serif font-bold text-brand-brown group-hover:text-brand-orange transition-colors">
+            Custom Pet Hoodies
+          </h3>
+          <p class="mt-2 text-brand-brown/70">Wear your pet proudly with our custom-designed hoodies featuring your furry friend.</p>
+          <a href="#" class="text-brand-orange hover:underline mt-2 inline-flex items-center gap-1 font-semibold">Explore Hoodies
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-narrow-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M15 16l4 -4" /><path d="M15 8l4 4" /></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Pet Paint by Number Kits -->
+      <div class="group block bg-brand-cream rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="aspect-4/3 bg-brand-tan flex items-center justify-center">
+          <img src="/pet-paint-kit.png" alt="Pet Paint by Number Kits" class="w-full h-full object-cover" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-serif font-bold text-brand-brown group-hover:text-brand-orange transition-colors">
+            Pet Paint by Number Kits
+          </h3>
+          <p class="mt-2 text-brand-brown/70">Create a masterpiece of your pet with our easy-to-follow paint-by-number kits.</p>
+          <a href="#" class="text-brand-orange hover:underline mt-2 inline-flex items-center gap-1 font-semibold">View Paint Kits
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brush"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21v-4a4 4 0 1 1 4 4h-4" /><path d="M21 3a16 16 0 0 0 -12.8 10.2" /><path d="M21 3a16 16 0 0 1 -10.2 12.8" /><path d="M10.6 9a9 9 0 0 1 4.4 4.4" /></svg>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
