@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @keyframes pan-left {
-  0% { transform: scale(1.1) translate(2%, -0.5%); }
-  100% { transform: scale(1.1) translate(-2%, 0.5%); }
+  0% { transform: scale(1.03) translate(2%, -0.5%); }
+  100% { transform: scale(1.03) translate(-2%, 0.5%); }
 }
 
 @keyframes pan-right {
-  0% { transform: scale(1.1) translate(-2%, 0.5%); }
-  100% { transform: scale(1.1) translate(2%, -0.5%); }
+  0% { transform: scale(1.03) translate(-2%, 0.5%); }
+  100% { transform: scale(1.03) translate(2%, -0.5%); }
 }
 
 /* Scroll-triggered reveal animations */
