@@ -24,17 +24,17 @@ const steps = [
 
 <section id="how-it-works" class="bg-brand-cream py-16 md:py-24">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl md:text-4xl font-serif font-bold text-center mb-4 text-brand-brown">
+    <h2 class="reveal text-3xl md:text-4xl font-serif font-bold text-center mb-4 text-brand-brown">
       Create Your Masterpiece in 3 Steps
     </h2>
-    <p class="text-center text-brand-brown/70 mb-12 max-w-2xl mx-auto">
+    <p class="reveal reveal-delay-1 text-center text-brand-brown/70 mb-12 max-w-2xl mx-auto">
       Upload your pet photo, choose a one-of-a-kind product, and let us do the rest.
       Fun, easy, and perfect for any pet lover.
     </p>
 
     <div class="grid md:grid-cols-3 gap-8 mb-12">
-      {steps.map((step) => (
-        <div class="text-center space-y-4">
+      {steps.map((step, i) => (
+        <div class:list={['reveal', `reveal-delay-${i}`, 'text-center', 'space-y-4']}>
           <div class="w-20 h-20 mx-auto bg-brand-tan rounded-full flex items-center justify-center">
             <svg class="w-10 h-10 text-brand-brown" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d={step.icon} />
@@ -48,7 +48,7 @@ const steps = [
       ))}
     </div>
 
-    <div class="text-center">
+    <div class="reveal text-center">
       <a
         href="#categories"
         class="inline-block bg-brand-brown text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-orange transition-colors"

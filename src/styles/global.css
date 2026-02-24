@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+@keyframes pan-left {
+  0% { transform: scale(1.1) translate(2%, -0.5%); }
+  100% { transform: scale(1.1) translate(-2%, 0.5%); }
+}
+
+@keyframes pan-right {
+  0% { transform: scale(1.1) translate(-2%, 0.5%); }
+  100% { transform: scale(1.1) translate(2%, -0.5%); }
+}
+
+/* Scroll-triggered reveal animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.15s; }
+.reveal-delay-2 { transition-delay: 0.3s; }
+
+@keyframes pulse-heart {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
 @theme {
   --color-brand-brown: #5C3D2E;
   --color-brand-cream: #F5F0EB;

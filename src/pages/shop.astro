@@ -23,14 +23,14 @@ const paintKits = [
   <main>
     <!-- Hero Split Banner -->
     <section class="bg-brand-white">
-      <div class="max-w-7xl mx-auto grid md:grid-cols-2">
+      <div class="grid md:grid-cols-2">
         <!-- Paint Your Pet -->
-        <div class="relative overflow-hidden">
+        <div class="group relative overflow-hidden">
           <div class="aspect-[4/3] md:aspect-auto md:h-[480px] bg-brand-cream flex items-center">
             <img
-              src="/public/paint-your-pet.png"
+              src="/paint-your-pet.png"
               alt="Paint your pet"
-              class="absolute inset-0 w-full h-full object-cover"
+              class="absolute inset-0 w-full h-full object-cover animate-[pan-left_8s_ease-in-out_infinite_alternate] group-hover:animate-[pan-right_8s_ease-in-out_infinite_alternate] group-hover:scale-115 transition-transform duration-700 ease-out"
             />
             <div class="relative z-10 p-8 md:p-12">
               <h1 class="text-3xl md:text-4xl font-serif font-bold text-white drop-shadow-lg">Paint Your Pet</h1>
@@ -42,12 +42,12 @@ const paintKits = [
           </div>
         </div>
         <!-- Wear Your Pet -->
-        <div class="relative overflow-hidden">
+        <div class="group relative overflow-hidden">
           <div class="aspect-[4/3] md:aspect-auto md:h-[480px] bg-brand-cream flex items-center">
             <img
-              src="/public/wear-your-pet.png"
+              src="/wear-your-pet.png"
               alt="Wear your pet"
-              class="absolute inset-0 w-full h-full object-cover"
+              class="absolute inset-0 w-full h-full object-cover animate-[pan-right_8s_ease-in-out_infinite_alternate] group-hover:animate-[pan-left_8s_ease-in-out_infinite_alternate] group-hover:scale-115 transition-transform duration-700 ease-out"
             />
             <div class="relative z-10 p-8 md:p-12 md:ml-auto text-right">
               <h1 class="text-3xl md:text-4xl font-serif font-bold text-white drop-shadow-lg">Wear Your Pet</h1>
