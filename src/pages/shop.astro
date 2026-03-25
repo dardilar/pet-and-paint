@@ -2,20 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { HOODIES, PAINT_KITS, formatPrice } from '../data/products';
 
-const hoodies = [
-  { name: 'Custom Pet Portrait Hoodie', price: '$59.99', image: '/products/hoodie-1.png' },
-  { name: 'Signature Pet Watercolor Hoodie', price: '$64.99', image: '/products/hoodie-2.png' },
-  { name: 'Minimalist Pet Sketch Hoodie', price: '$54.99', image: '/products/hoodie-3.png' },
-  { name: 'Pet "Washed Out" Hoodie', price: '$59.99', image: '/products/hoodie-4.png' },
-];
-
-const paintKits = [
-  { name: 'Custom Pet Oil Painting Kit', price: '$39.99', image: '/products/kit-1.png' },
-  { name: 'Signature Watercolor Kit', price: '$34.99', image: '/products/kit-2.png' },
-  { name: 'Pet Pop Art Kit', price: '$37.99', image: '/products/kit-3.png' },
-  { name: 'Pet "Washed Out" Kit', price: '$35.99', image: '/products/kit-4.png' },
-];
+const hoodies = HOODIES;
+const paintKits = PAINT_KITS;
 ---
 
 <Layout title="Shop — Pet & Paint">
@@ -78,7 +68,7 @@ const paintKits = [
               </div>
               <div class="p-4">
                 <h3 class="text-sm font-semibold text-brand-brown leading-tight">{product.name}</h3>
-                <p class="mt-1 text-brand-orange font-bold">{product.price}</p>
+                <p class="mt-1 text-brand-orange font-bold">{formatPrice(product.price)}</p>
               </div>
             </div>
           ))}
@@ -103,11 +93,26 @@ const paintKits = [
               </div>
               <div class="p-4">
                 <h3 class="text-sm font-semibold text-brand-brown leading-tight">{product.name}</h3>
-                <p class="mt-1 text-brand-orange font-bold">{product.price}</p>
+                <p class="mt-1 text-brand-orange font-bold">{formatPrice(product.price)}</p>
               </div>
             </div>
           ))}
         </div>
+      </div>
+    </section>
+    <!-- Custom Order CTA -->
+    <section class="py-12 bg-brand-cream">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-2xl md:text-3xl font-serif font-bold text-brand-brown mb-3">
+          Have a pet photo ready?
+        </h2>
+        <p class="text-brand-brown/70 mb-6">Start your custom order and we'll turn it into something amazing.</p>
+        <a
+          href="/order"
+          class="inline-block bg-brand-orange text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-brown transition-colors"
+        >
+          Start Your Custom Order
+        </a>
       </div>
     </section>
   </main>

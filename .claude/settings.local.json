@@ -8,7 +8,11 @@
       "mcp__notion__notion-fetch",
       "mcp__notion__notion-update-page",
       "mcp__notion__notion-create-pages",
-      "mcp__notion__notion-update-data-source"
+      "mcp__notion__notion-update-data-source",
+      "Bash(grep -E \"\\\\.\\(astro|tsx?|jsx?\\)$\")",
+      "Bash(find /home/dsardila/projects/pet-and-paint -type d ! -path */node_modules*)",
+      "Bash(curl -s http://localhost:4322/order/)",
+      "Bash(npm ls:*)"
     ]
   }
 }
