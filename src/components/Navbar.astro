@@ -14,13 +14,19 @@
 
     <!-- Desktop Nav Links -->
     <div class="hidden md:flex items-center gap-8">
-      <a href="/shop" class="text-brand-brown hover:text-brand-orange transition-colors">Shop</a>
-      <a href="/order" class="text-brand-brown hover:text-brand-orange transition-colors">Custom Order</a>
-      <a href="/#mission" class="text-brand-brown hover:text-brand-orange transition-colors">Our Mission</a>
-      <a href="/#how-it-works" class="text-brand-brown hover:text-brand-orange transition-colors">How It Works</a>
-      <a href="/order" class="bg-brand-brown text-white px-5 py-2 rounded-full hover:bg-brand-orange transition-colors">
-        Order Now
+      <a href="/shop" class="text-brand-brown hover:text-brand-orange transition-colors" data-i18n="nav.shop">Tienda</a>
+      <a href="/order" class="text-brand-brown hover:text-brand-orange transition-colors" data-i18n="nav.customOrder">Pedido Personalizado</a>
+      <a href="/#mission" class="text-brand-brown hover:text-brand-orange transition-colors" data-i18n="nav.mission">Nuestra Misión</a>
+      <a href="/#how-it-works" class="text-brand-brown hover:text-brand-orange transition-colors" data-i18n="nav.howItWorks">Cómo Funciona</a>
+      <a href="/order" class="bg-brand-brown text-white px-5 py-2 rounded-full hover:bg-brand-orange transition-colors" data-i18n="nav.orderNow">
+        Pedir Ahora
       </a>
+      <!-- Language toggle -->
+      <div class="flex items-center gap-1 border border-brand-tan rounded-full px-3 py-1">
+        <button data-lang-btn="es" class="text-sm text-brand-brown transition-all cursor-pointer" style="font-weight:700">🇨🇴 ES</button>
+        <span class="text-brand-brown/30 select-none">|</span>
+        <button data-lang-btn="en" class="text-sm text-brand-brown transition-all cursor-pointer" style="opacity:0.4">🇺🇸 EN</button>
+      </div>
     </div>
 
     <!-- Mobile hamburger button -->
@@ -37,10 +43,16 @@
 
   <!-- Mobile menu (hidden by default) -->
   <div id="mobile-menu" class="hidden md:hidden px-4 pb-4 space-y-2">
-    <a href="/shop" class="block py-2 text-brand-brown hover:text-brand-orange">Shop</a>
-    <a href="/order" class="block py-2 text-brand-brown hover:text-brand-orange">Custom Order</a>
-    <a href="/#mission" class="block py-2 text-brand-brown hover:text-brand-orange">Our Mission</a>
-    <a href="/#how-it-works" class="block py-2 text-brand-brown hover:text-brand-orange">How It Works</a>
+    <a href="/shop" class="block py-2 text-brand-brown hover:text-brand-orange" data-i18n="nav.shop">Tienda</a>
+    <a href="/order" class="block py-2 text-brand-brown hover:text-brand-orange" data-i18n="nav.customOrder">Pedido Personalizado</a>
+    <a href="/#mission" class="block py-2 text-brand-brown hover:text-brand-orange" data-i18n="nav.mission">Nuestra Misión</a>
+    <a href="/#how-it-works" class="block py-2 text-brand-brown hover:text-brand-orange" data-i18n="nav.howItWorks">Cómo Funciona</a>
+    <!-- Mobile language toggle -->
+    <div class="flex items-center gap-2 pt-2 border-t border-brand-tan/50">
+      <button data-lang-btn="es" class="text-sm text-brand-brown transition-all cursor-pointer" style="font-weight:700">🇨🇴 ES</button>
+      <span class="text-brand-brown/30 select-none">|</span>
+      <button data-lang-btn="en" class="text-sm text-brand-brown transition-all cursor-pointer" style="opacity:0.4">🇺🇸 EN</button>
+    </div>
   </div>
 </header>
 

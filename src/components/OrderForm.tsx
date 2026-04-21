@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import type { FormEvent } from 'react';
 import {
   SIZES,
   getProducts,
@@ -8,16 +9,30 @@ import {
   type ProductType,
   type Size,
 } from '../data/products';
+import { translations, type Lang } from '../i18n/translations';
+
+function useLang(): Lang {
+  const [lang, setLang] = useState<Lang>(() =>
+    ((typeof localStorage !== 'undefined' && localStorage.getItem('lang')) || 'es') as Lang
+  );
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setLang((e as CustomEvent<{ lang: Lang }>).detail.lang);
+    };
+    document.addEventListener('languagechange', handler);
+    return () => document.removeEventListener('languagechange', handler);
+  }, []);
+  return lang;
+}
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SUBMISSION_TIMEOUT = 60_000;
-const WEB3FORMS_KEY = '75cbccb4-df9c-4a93-a1d4-752af4b4e6d0';
+const WEB3FORMS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY;
 
-// Cloudinary unsigned upload — replace with your cloud name and upload preset
-const CLOUDINARY_CLOUD = 'db7dz8rue';
-const CLOUDINARY_PRESET = 'petandpaint';
+const CLOUDINARY_CLOUD = import.meta.env.PUBLIC_CLOUDINARY_CLOUD;
+const CLOUDINARY_PRESET = import.meta.env.PUBLIC_CLOUDINARY_PRESET;
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`;
 
 async function uploadPhoto(file: File, signal: AbortSignal): Promise<string> {
@@ -34,10 +49,12 @@ async function uploadPhoto(file: File, signal: AbortSignal): Promise<string> {
   return json.secure_url;
 }
 
-const PRODUCT_TYPE_META: Record<ProductType, { label: string; emoji: string }> = {
-  hoodie: { label: 'Hoodie', emoji: '\uD83E\uDDE5' },
-  'paint-kit': { label: 'Paint Kit', emoji: '\uD83C\uDFA8' },
-};
+function getProductTypeMeta(t: typeof translations.es.form): Record<ProductType, { label: string; emoji: string }> {
+  return {
+    hoodie: { label: t.productHoodie, emoji: '\uD83E\uDDE5' },
+    'paint-kit': { label: t.productPaintKit, emoji: '\uD83C\uDFA8' },
+  };
+}
 
 const primaryBtn =
   'bg-brand-brown text-white px-6 py-2.5 rounded-full font-semibold hover:bg-brand-orange transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
@@ -51,16 +68,15 @@ function selectionClass(isSelected: boolean) {
     : 'border-brand-tan hover:border-brand-brown/40';
 }
 
-function validateFile(file: File): string | null {
-  if (file.size > MAX_FILE_SIZE) return 'File must be under 10MB.';
-  if (!ACCEPTED_TYPES.includes(file.type)) return 'Please upload a JPEG, PNG, or WebP image.';
+function validateFile(file: File, t: typeof translations.es.form): string | null {
+  if (file.size > MAX_FILE_SIZE) return t.errorFileSize;
+  if (!ACCEPTED_TYPES.includes(file.type)) return t.errorFileType;
   return null;
 }
 
 // --- Sub-components ---
 
-function StepIndicator({ current }: { current: number }) {
-  const labels = ['Upload Photo', 'Choose Product', 'Your Details'];
+function StepIndicator({ current, labels }: { current: number; labels: [string, string, string] }) {
   return (
     <ol className="flex items-center justify-center gap-2 mb-8" aria-label="Order progress">
       {labels.map((label, i) => {
@@ -125,6 +141,10 @@ function FormField({
 // --- Main component ---
 
 export default function OrderForm() {
+  const lang = useLang();
+  const t = translations[lang].form;
+  const PRODUCT_TYPE_META = getProductTypeMeta(t);
+
   const [step, setStep] = useState(1);
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -160,7 +180,7 @@ export default function OrderForm() {
 
   const handleFile = useCallback((file: File) => {
     setPhotoError('');
-    const error = validateFile(file);
+    const error = validateFile(file, t);
     if (error) {
       setPhotoError(error);
       return;
@@ -168,20 +188,20 @@ export default function OrderForm() {
     setPhoto(file);
     // Reset file input so re-uploading the same file triggers onChange
     if (fileInputRef.current) fileInputRef.current.value = '';
-  }, []);
+  }, [t]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       setDragCounter(0);
       if (e.dataTransfer.files.length > 1) {
-        setPhotoError('Please upload only one photo at a time.');
+        setPhotoError(t.errorMultipleFiles);
         return;
       }
       const file = e.dataTransfer.files[0];
       if (file) handleFile(file);
     },
-    [handleFile],
+    [handleFile, t],
   );
 
   const products = productType ? getProducts(productType) : [];
@@ -194,7 +214,7 @@ export default function OrderForm() {
   const isEmailValid = EMAIL_REGEX.test(email);
   const canSubmit = name.trim().length >= 2 && isEmailValid;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!canSubmit || !photo || !selectedProduct) return;
 
@@ -234,17 +254,17 @@ export default function OrderForm() {
       if (data.success) {
         setSubmitted(true);
       } else {
-        setSubmitError(data.message || 'Something went wrong. Please try again.');
+        setSubmitError(data.message || t.errorGeneric);
       }
     } catch (err) {
       if (err instanceof Error) {
         if (err.name === 'AbortError') {
-          setSubmitError('Request timed out. Please check your connection and try again.');
+          setSubmitError(t.errorTimeout);
         } else {
           setSubmitError(err.message);
         }
       } else {
-        setSubmitError('Network error. Please check your connection and try again.');
+        setSubmitError(t.errorNetwork);
       }
     } finally {
       clearTimeout(timeoutId);
@@ -260,16 +280,16 @@ export default function OrderForm() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="text-2xl font-serif font-bold text-brand-brown">Order Received!</h2>
+        <h2 className="text-2xl font-serif font-bold text-brand-brown">{t.successTitle}</h2>
         <p className="text-brand-brown/70 max-w-md mx-auto">
-          Thank you, {name}! We've received your order and will review your pet photo.
-          You'll receive a payment link at <strong>{email}</strong> shortly.
+          {lang === 'es' ? `¡Gracias, ${name}! ` : `Thank you, ${name}! `}
+          {t.successBody} <strong>{email}</strong> {t.successSuffix}
         </p>
         <a
           href="/shop"
           className={`inline-block mt-4 ${primaryBtn}`}
         >
-          Back to Shop
+          {t.backToShop}
         </a>
       </div>
     );
@@ -277,22 +297,22 @@ export default function OrderForm() {
 
   return (
     <div>
-      <StepIndicator current={step} />
+      <StepIndicator current={step} labels={[t.stepUploadPhoto, t.stepChooseProduct, t.stepYourDetails]} />
 
       {/* Step 1: Upload Photo */}
       {step === 1 && (
         <div className="space-y-4">
           <h2 ref={stepHeadingRef} tabIndex={-1} className="text-xl font-serif font-bold text-brand-brown outline-none">
-            Upload Your Pet Photo
+            {t.step1Title}
           </h2>
           <p className="text-brand-brown/70 text-sm">
-            Upload a clear photo of your pet. JPEG, PNG, or WebP up to 10MB.
+            {t.step1Hint}
           </p>
 
           <div
             role="button"
             tabIndex={0}
-            aria-label="Upload pet photo — click to select file or drag and drop"
+            aria-label={t.step1AriaLabel}
             className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors ${
               dragCounter > 0
                 ? 'border-brand-orange bg-brand-orange/5'
@@ -329,15 +349,15 @@ export default function OrderForm() {
                   alt="Pet preview"
                   className="max-h-64 mx-auto rounded-lg object-contain"
                 />
-                <p className="text-sm text-brand-brown/70">{photo?.name} — Click or drop to replace</p>
+                <p className="text-sm text-brand-brown/70">{photo?.name} — {t.step1ReplaceHint}</p>
               </div>
             ) : (
               <div className="space-y-2 py-4">
                 <svg className="w-12 h-12 mx-auto text-brand-tan" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                 </svg>
-                <p className="text-brand-brown font-medium">Click to upload or drag & drop</p>
-                <p className="text-sm text-brand-brown/50">JPEG, PNG, or WebP up to 10MB</p>
+                <p className="text-brand-brown font-medium">{t.step1UploadCta}</p>
+                <p className="text-sm text-brand-brown/50">{t.step1UploadHint}</p>
               </div>
             )}
           </div>
@@ -346,7 +366,7 @@ export default function OrderForm() {
 
           <div className="flex justify-end">
             <button disabled={!photo} onClick={() => setStep(2)} className={primaryBtn}>
-              Next
+              {t.next}
             </button>
           </div>
         </div>
@@ -356,7 +376,7 @@ export default function OrderForm() {
       {step === 2 && (
         <div className="space-y-6">
           <h2 ref={stepHeadingRef} tabIndex={-1} className="text-xl font-serif font-bold text-brand-brown outline-none">
-            Choose Your Product
+            {t.step2Title}
           </h2>
 
           {/* Product type cards */}
@@ -377,7 +397,7 @@ export default function OrderForm() {
                 >
                   <div className="text-2xl mb-2">{meta.emoji}</div>
                   <h3 className="font-serif font-bold text-brand-brown">{meta.label}</h3>
-                  <p className="text-sm text-brand-brown/70">from {formatPrice(getMinPrice(type))}</p>
+                  <p className="text-sm text-brand-brown/70">{t.step2From} {formatPrice(getMinPrice(type))}</p>
                 </button>
               );
             })}
@@ -386,7 +406,7 @@ export default function OrderForm() {
           {/* Style selection */}
           {productType && (
             <div className="space-y-3">
-              <h3 className="font-semibold text-brand-brown">Select a Style</h3>
+              <h3 className="font-semibold text-brand-brown">{t.step2SelectStyle}</h3>
               <div className="grid grid-cols-2 gap-3">
                 {products.map((product) => {
                   const isSelected = selectedProduct?.id === product.id;
@@ -409,7 +429,7 @@ export default function OrderForm() {
           {/* Size selector for hoodies */}
           {productType === 'hoodie' && selectedProduct && (
             <div className="space-y-3">
-              <h3 className="font-semibold text-brand-brown">Select a Size</h3>
+              <h3 className="font-semibold text-brand-brown">{t.step2SelectSize}</h3>
               <div className="flex flex-wrap gap-2">
                 {SIZES.map((size) => {
                   const isSelected = selectedSize === size;
@@ -434,10 +454,10 @@ export default function OrderForm() {
 
           <div className="flex justify-between">
             <button onClick={() => setStep(1)} className={backBtn}>
-              &larr; Back
+              {t.back}
             </button>
             <button disabled={!canAdvanceStep2} onClick={() => setStep(3)} className={primaryBtn}>
-              Next
+              {t.next}
             </button>
           </div>
         </div>
@@ -447,11 +467,11 @@ export default function OrderForm() {
       {step === 3 && (
         <form onSubmit={handleSubmit} className="space-y-6" aria-label="Order details">
           <h2 ref={stepHeadingRef} tabIndex={-1} className="text-xl font-serif font-bold text-brand-brown outline-none">
-            Your Details & Review
+            {t.step3Title}
           </h2>
 
           <div className="space-y-4">
-            <FormField label="Name" required>
+            <FormField label={t.fieldName} required>
               <input
                 type="text"
                 value={name}
@@ -459,11 +479,11 @@ export default function OrderForm() {
                 required
                 aria-required="true"
                 className={inputClass}
-                placeholder="Your full name"
+                placeholder={t.placeholderName}
               />
             </FormField>
 
-            <FormField label="Email" required>
+            <FormField label={t.fieldEmail} required>
               <input
                 type="email"
                 value={email}
@@ -471,18 +491,18 @@ export default function OrderForm() {
                 required
                 aria-required="true"
                 className={inputClass}
-                placeholder="you@email.com"
+                placeholder={t.placeholderEmail}
               />
             </FormField>
 
-            <FormField label="Special Instructions">
+            <FormField label={t.fieldInstructions}>
               <textarea
                 value={instructions}
                 onChange={(e) => setInstructions(e.target.value)}
                 rows={3}
                 maxLength={500}
                 className={`${inputClass} resize-none`}
-                placeholder="Any specific requests for your order..."
+                placeholder={t.placeholderInstructions}
               />
               <p className="text-xs text-brand-brown/50 mt-1 text-right">
                 {instructions.length}/500
@@ -492,7 +512,7 @@ export default function OrderForm() {
 
           {/* Order summary */}
           <div className="bg-brand-cream rounded-2xl p-5 space-y-3">
-            <h3 className="font-serif font-bold text-brand-brown">Order Summary</h3>
+            <h3 className="font-serif font-bold text-brand-brown">{t.summaryTitle}</h3>
             <div className="flex gap-4">
               {photoPreview && (
                 <img
@@ -504,7 +524,7 @@ export default function OrderForm() {
               <div className="text-sm space-y-1">
                 <p className="font-semibold text-brand-brown">{selectedProduct?.name}</p>
                 {productType === 'hoodie' && selectedSize && (
-                  <p className="text-brand-brown/70">Size: {selectedSize}</p>
+                  <p className="text-brand-brown/70">{t.summarySize} {selectedSize}</p>
                 )}
                 <p className="text-brand-orange font-bold text-base">
                   {selectedProduct && formatPrice(selectedProduct.price)}
@@ -517,7 +537,7 @@ export default function OrderForm() {
 
           <div className="flex justify-between">
             <button type="button" onClick={() => setStep(2)} className={backBtn}>
-              &larr; Back
+              {t.back}
             </button>
             <button
               type="submit"
@@ -530,7 +550,7 @@ export default function OrderForm() {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
               )}
-              {submitting ? 'Submitting...' : 'Submit Order'}
+              {submitting ? t.submitting : t.submit}
             </button>
           </div>
         </form>

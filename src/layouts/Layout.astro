@@ -1,14 +1,16 @@
 ---
 import '../styles/global.css';
+import { translations } from '../i18n/translations';
 
 interface Props {
   title: string;
 }
 const { title } = Astro.props;
+const i18nData = JSON.stringify(translations);
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="es" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,6 +40,39 @@ const { title } = Astro.props;
         { threshold: 0.15 }
       );
       document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    </script>
+    <script define:vars={{ i18nData }}>
+      const TRANSLATIONS = JSON.parse(i18nData);
+
+      function getVal(obj, path) {
+        return path.split('.').reduce((acc, key) => acc?.[key], obj);
+      }
+
+      function applyLang(lang) {
+        document.documentElement.lang = lang;
+        const t = TRANSLATIONS[lang];
+        document.querySelectorAll('[data-i18n]').forEach((el) => {
+          const val = getVal(t, el.dataset.i18n);
+          if (val !== undefined) el.textContent = val;
+        });
+        document.querySelectorAll('[data-lang-btn]').forEach((btn) => {
+          const isActive = btn.dataset.langBtn === lang;
+          btn.style.fontWeight = isActive ? '700' : '400';
+          btn.style.opacity = isActive ? '1' : '0.4';
+        });
+      }
+
+      const saved = localStorage.getItem('lang') || 'es';
+      applyLang(saved);
+
+      document.querySelectorAll('[data-lang-btn]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const newLang = btn.dataset.langBtn;
+          localStorage.setItem('lang', newLang);
+          applyLang(newLang);
+          document.dispatchEvent(new CustomEvent('languagechange', { detail: { lang: newLang } }));
+        });
+      });
     </script>
   </body>
 </html>

@@ -9,11 +9,11 @@ import OrderForm from '../components/OrderForm';
   <Navbar />
   <main class="py-12 md:py-20 bg-brand-white min-h-screen">
     <div class="max-w-2xl mx-auto px-4 sm:px-6">
-      <h1 class="text-3xl md:text-4xl font-serif font-bold text-brand-brown text-center mb-2">
-        Create Your Custom Order
+      <h1 class="text-3xl md:text-4xl font-serif font-bold text-brand-brown text-center mb-2" data-i18n="order.title">
+        Crea Tu Pedido Personalizado
       </h1>
-      <p class="text-center text-brand-brown/70 mb-10">
-        Upload your pet photo, pick a product, and we'll handle the rest.
+      <p class="text-center text-brand-brown/70 mb-10" data-i18n="order.subtitle">
+        Sube la foto de tu mascota, elige un producto y nosotros nos encargamos del resto.
       </p>
       <OrderForm client:load />
     </div>

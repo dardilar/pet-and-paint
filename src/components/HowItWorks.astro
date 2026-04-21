@@ -3,20 +3,23 @@
 const steps = [
   {
     number: '1',
-    title: 'Upload Your Photo',
-    description: 'Upload your favourite pet photo — any breed, any pose, any personality.',
+    key: 'step1',
+    title: 'Sube Tu Foto',
+    description: 'Sube tu foto favorita de tu mascota — cualquier raza, cualquier pose, cualquier personalidad.',
     icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
   },
   {
     number: '2',
-    title: 'Choose Your Product',
-    description: 'Pick from our custom pet hoodies, paint-by-number kits, or both.',
+    key: 'step2',
+    title: 'Elige Tu Producto',
+    description: 'Elige entre nuestras sudaderas personalizadas con tu mascota, kits de pintura por números, o ambos.',
     icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z',
   },
   {
     number: '3',
-    title: 'Receive Your Creation',
-    description: 'We craft it with care and ship it to your door. Ready to wear or paint.',
+    key: 'step3',
+    title: 'Recibe Tu Creación',
+    description: 'Lo elaboramos con cuidado y lo enviamos a tu puerta. Listo para usar o pintar.',
     icon: 'M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4',
   },
 ];
@@ -24,12 +27,11 @@ const steps = [
 
 <section id="how-it-works" class="bg-brand-cream py-16 md:py-24">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="reveal text-3xl md:text-4xl font-serif font-bold text-center mb-4 text-brand-brown">
-      Create Your Masterpiece in 3 Steps
+    <h2 class="reveal text-3xl md:text-4xl font-serif font-bold text-center mb-4 text-brand-brown" data-i18n="howItWorks.title">
+      Crea Tu Obra Maestra en 3 Pasos
     </h2>
-    <p class="reveal reveal-delay-1 text-center text-brand-brown/70 mb-12 max-w-2xl mx-auto">
-      Upload your pet photo, choose a one-of-a-kind product, and let us do the rest.
-      Fun, easy, and perfect for any pet lover.
+    <p class="reveal reveal-delay-1 text-center text-brand-brown/70 mb-12 max-w-2xl mx-auto" data-i18n="howItWorks.subtitle">
+      Sube la foto de tu mascota, elige un producto único y déjanos hacer el resto. Fácil, divertido y perfecto para los amantes de las mascotas.
     </p>
 
     <div class="grid md:grid-cols-3 gap-8 mb-12">
@@ -41,9 +43,10 @@ const steps = [
             </svg>
           </div>
           <h3 class="text-xl font-serif font-bold text-brand-brown">
-            <span class="text-brand-orange">Step {step.number}:</span> {step.title}
+            <span class="text-brand-orange" data-i18n={`howItWorks.${step.key}.label`}>Paso {step.number}:</span>{' '}
+            <span data-i18n={`howItWorks.${step.key}.title`}>{step.title}</span>
           </h3>
-          <p class="text-brand-brown/70 max-w-xs mx-auto">{step.description}</p>
+          <p class="text-brand-brown/70 max-w-xs mx-auto" data-i18n={`howItWorks.${step.key}.desc`}>{step.description}</p>
         </div>
       ))}
     </div>
@@ -52,8 +55,9 @@ const steps = [
       <a
         href="/order"
         class="inline-block bg-brand-brown text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-orange transition-colors"
+        data-i18n="howItWorks.getStarted"
       >
-        Get Started
+        Comenzar
       </a>
     </div>
   </div>

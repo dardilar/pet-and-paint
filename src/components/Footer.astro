@@ -9,34 +9,34 @@ const currentYear = new Date().getFullYear();
       <!-- Brand column -->
       <div class="space-y-4">
         <span class="text-2xl font-serif font-bold">Pet & Paint</span>
-        <p class="text-white/70 text-sm">
-          Celebrating the bond between pets and their people through custom wearable art and creative kits.
+        <p class="text-white/70 text-sm" data-i18n="footer.tagline">
+          Celebrando el vínculo entre las mascotas y sus personas a través del arte vestible personalizado y kits creativos.
         </p>
       </div>
 
       <!-- Shop column -->
       <div>
-        <h4 class="font-semibold mb-4">Shop</h4>
+        <h4 class="font-semibold mb-4" data-i18n="footer.shopCol">Tienda</h4>
         <ul class="space-y-2 text-white/70 text-sm">
-          <li><a href="#" class="hover:text-white transition-colors">Custom Hoodies</a></li>
-          <li><a href="#" class="hover:text-white transition-colors">Paint by Number Kits</a></li>
-          <li><a href="/order" class="hover:text-white transition-colors">Custom Order</a></li>
+          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.shopHoodies">Sudaderas Personalizadas</a></li>
+          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.shopKits">Kits de Pintura por Números</a></li>
+          <li><a href="/order" class="hover:text-white transition-colors" data-i18n="footer.shopOrder">Pedido Personalizado</a></li>
         </ul>
       </div>
 
       <!-- Company column -->
       <div>
-        <h4 class="font-semibold mb-4">Company</h4>
+        <h4 class="font-semibold mb-4" data-i18n="footer.companyCol">Empresa</h4>
         <ul class="space-y-2 text-white/70 text-sm">
-          <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
-          <li><a href="#" class="hover:text-white transition-colors">Our Mission</a></li>
-          <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.companyAbout">Sobre Nosotros</a></li>
+          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.companyMission">Nuestra Misión</a></li>
+          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.companyContact">Contacto</a></li>
         </ul>
       </div>
 
       <!-- Connect column -->
       <div>
-        <h4 class="font-semibold mb-4">Connect</h4>
+        <h4 class="font-semibold mb-4" data-i18n="footer.connectCol">Conecta</h4>
         <ul class="space-y-2 text-white/70 text-sm">
           <li><a href="#" class="hover:text-white transition-colors">Instagram</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Facebook</a></li>
@@ -47,7 +47,7 @@ const currentYear = new Date().getFullYear();
 
     <!-- Bottom bar -->
     <div class="border-t border-white/20 mt-8 pt-8 text-center text-white/50 text-sm">
-      &copy; {currentYear} Pet & Paint. All rights reserved.
+      &copy; {currentYear} Pet & Paint. <span data-i18n="footer.copyright">Todos los derechos reservados.</span>
     </div>
   </div>
 </footer>
