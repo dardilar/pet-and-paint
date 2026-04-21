@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import type { FormEvent } from 'react';
 import {
   SIZES,
@@ -35,7 +35,7 @@ const CLOUDINARY_CLOUD = import.meta.env.PUBLIC_CLOUDINARY_CLOUD;
 const CLOUDINARY_PRESET = import.meta.env.PUBLIC_CLOUDINARY_PRESET;
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`;
 
-async function uploadPhoto(file: File, signal: AbortSignal): Promise<string> {
+async function uploadPhoto(file: File, signal: AbortSignal, fallbackError: string): Promise<string> {
   const data = new FormData();
   data.append('file', file);
   data.append('upload_preset', CLOUDINARY_PRESET);
@@ -44,12 +44,12 @@ async function uploadPhoto(file: File, signal: AbortSignal): Promise<string> {
   const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: data, signal });
   const json = await res.json();
   if (!res.ok) {
-    throw new Error(json?.error?.message || 'Photo upload failed. Please try again.');
+    throw new Error(json?.error?.message || fallbackError);
   }
   return json.secure_url;
 }
 
-function getProductTypeMeta(t: typeof translations.es.form): Record<ProductType, { label: string; emoji: string }> {
+function getProductTypeMeta(t: typeof translations[Lang]['form']): Record<ProductType, { label: string; emoji: string }> {
   return {
     hoodie: { label: t.productHoodie, emoji: '\uD83E\uDDE5' },
     'paint-kit': { label: t.productPaintKit, emoji: '\uD83C\uDFA8' },
@@ -68,7 +68,7 @@ function selectionClass(isSelected: boolean) {
     : 'border-brand-tan hover:border-brand-brown/40';
 }
 
-function validateFile(file: File, t: typeof translations.es.form): string | null {
+function validateFile(file: File, t: typeof translations[Lang]['form']): string | null {
   if (file.size > MAX_FILE_SIZE) return t.errorFileSize;
   if (!ACCEPTED_TYPES.includes(file.type)) return t.errorFileType;
   return null;
@@ -84,7 +84,7 @@ function StepIndicator({ current, labels }: { current: number; labels: [string, 
         const isCompleted = step < current;
         const isActive = step === current;
         return (
-          <li key={label} className="flex items-center gap-2">
+          <li key={i} className="flex items-center gap-2">
             {i > 0 && (
               <div className={`w-8 h-0.5 ${isCompleted ? 'bg-brand-brown' : 'bg-brand-tan'}`} />
             )}
@@ -143,7 +143,7 @@ function FormField({
 export default function OrderForm() {
   const lang = useLang();
   const t = translations[lang].form;
-  const PRODUCT_TYPE_META = getProductTypeMeta(t);
+  const productTypeMeta = useMemo(() => getProductTypeMeta(t), [t]);
 
   const [step, setStep] = useState(1);
   const [photo, setPhoto] = useState<File | null>(null);
@@ -226,7 +226,7 @@ export default function OrderForm() {
 
     try {
       // 1. Upload photo to Cloudinary
-      const photoUrl = await uploadPhoto(photo, controller.signal);
+      const photoUrl = await uploadPhoto(photo, controller.signal, t.errorUploadFailed);
 
       // 2. Send order details + photo URL via Web3Forms
       const formData = new FormData();
@@ -317,8 +317,8 @@ export default function OrderForm() {
               dragCounter > 0
                 ? 'border-brand-orange bg-brand-orange/5'
                 : photoPreview
-                  ? 'border-brand-brown/30'
-                  : 'border-brand-tan hover:border-brand-orange'
+                  ? 'border-brand-brown/30 bg-brand-cream/50'
+                  : 'border-brand-brown/25 bg-brand-cream hover:border-brand-orange'
             }`}
             onClick={() => fileInputRef.current?.click()}
             onKeyDown={(e) => {
@@ -353,7 +353,7 @@ export default function OrderForm() {
               </div>
             ) : (
               <div className="space-y-2 py-4">
-                <svg className="w-12 h-12 mx-auto text-brand-tan" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <svg className="w-12 h-12 mx-auto text-brand-brown/30" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                 </svg>
                 <p className="text-brand-brown font-medium">{t.step1UploadCta}</p>
@@ -382,7 +382,7 @@ export default function OrderForm() {
           {/* Product type cards */}
           <div className="grid grid-cols-2 gap-4">
             {(['hoodie', 'paint-kit'] as const).map((type) => {
-              const meta = PRODUCT_TYPE_META[type];
+              const meta = productTypeMeta[type];
               const isSelected = productType === type;
               return (
                 <button

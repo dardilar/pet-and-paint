@@ -15,7 +15,7 @@ import OrderForm from '../components/OrderForm';
       <p class="text-center text-brand-brown/70 mb-10" data-i18n="order.subtitle">
         Sube la foto de tu mascota, elige un producto y nosotros nos encargamos del resto.
       </p>
-      <OrderForm client:load />
+      <OrderForm client:only="react" />
     </div>
   </main>
   <Footer />

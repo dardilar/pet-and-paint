@@ -115,6 +115,7 @@ export const translations = {
       errorTimeout: 'La solicitud expiró. Verifica tu conexión e inténtalo de nuevo.',
       errorNetwork: 'Error de red. Verifica tu conexión e inténtalo de nuevo.',
       errorGeneric: 'Algo salió mal. Por favor inténtalo de nuevo.',
+      errorUploadFailed: 'Error al subir la foto. Por favor inténtalo de nuevo.',
     },
   },
 
@@ -232,6 +233,7 @@ export const translations = {
       errorTimeout: 'Request timed out. Please check your connection and try again.',
       errorNetwork: 'Network error. Please check your connection and try again.',
       errorGeneric: 'Something went wrong. Please try again.',
+      errorUploadFailed: 'Photo upload failed. Please try again.',
     },
   },
 } as const;
