@@ -6,17 +6,14 @@ export interface Product {
 }
 
 export const HOODIES: Product[] = [
-  { id: 'hoodie-1', name: 'Custom Pet Portrait Hoodie', price: 59.99, image: '/products/hoodie-1.png' },
-  { id: 'hoodie-2', name: 'Signature Pet Watercolor Hoodie', price: 64.99, image: '/products/hoodie-2.png' },
-  { id: 'hoodie-3', name: 'Minimalist Pet Sketch Hoodie', price: 54.99, image: '/products/hoodie-3.png' },
-  { id: 'hoodie-4', name: 'Pet "Washed Out" Hoodie', price: 59.99, image: '/products/hoodie-4.png' },
+  { id: 'hoodie-face', name: 'Pet Face', price: 89990, image: '/products/hoodie-face.png' },
+  { id: 'hoodie-fingerprint', name: 'Pet Fingerprint', price: 89990, image: '/products/hoodie-fingerprint.png' },
+  { id: 'hoodie-both', name: 'Pet Face + Fingerprint', price: 99990, image: '/products/hoodie-both.png' },
 ];
 
 export const PAINT_KITS: Product[] = [
-  { id: 'kit-1', name: 'Custom Pet Oil Painting Kit', price: 39.99, image: '/products/kit-1.png' },
-  { id: 'kit-2', name: 'Signature Watercolor Kit', price: 34.99, image: '/products/kit-2.png' },
-  { id: 'kit-3', name: 'Pet Pop Art Kit', price: 37.99, image: '/products/kit-3.png' },
-  { id: 'kit-4', name: 'Pet "Washed Out" Kit', price: 35.99, image: '/products/kit-4.png' },
+  { id: 'kit-numbers', name: 'Paint by Numbers', price: 59990, image: '/products/kit-numbers.png' },
+  { id: 'kit-canvas', name: 'Canvas Print', price: 49990, image: '/products/kit-canvas.png' },
 ];
 
 export type ProductType = 'hoodie' | 'paint-kit';
@@ -24,8 +21,10 @@ export type ProductType = 'hoodie' | 'paint-kit';
 export const SIZES = ['S', 'M', 'L', 'XL', '2XL'] as const;
 export type Size = (typeof SIZES)[number];
 
+const COP_FORMATTER = new Intl.NumberFormat('es-CO');
+
 export function formatPrice(price: number): string {
-  return `$${price.toFixed(2)}`;
+  return `${COP_FORMATTER.format(price)} COP`;
 }
 
 export function getProducts(type: ProductType): Product[] {

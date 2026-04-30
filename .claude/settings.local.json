@@ -18,7 +18,10 @@
       "Bash(npx skills:*)",
       "Bash(curl -s http://localhost:4321/order)",
       "Bash(cat /home/dsardila/projects/pet-and-paint/tailwind.config.*)",
-      "Bash(grep -r \"brand-tan\\\\|brand-white\\\\|brand-cream\" /home/dsardila/projects/pet-and-paint/astro.config.* /home/dsardila/projects/pet-and-paint/src/styles/)"
+      "Bash(grep -r \"brand-tan\\\\|brand-white\\\\|brand-cream\" /home/dsardila/projects/pet-and-paint/astro.config.* /home/dsardila/projects/pet-and-paint/src/styles/)",
+      "Bash(xxd)",
+      "Bash(python3 *)",
+      "Bash(npx tsc *)"
     ]
   }
 }
