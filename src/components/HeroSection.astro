@@ -1,5 +1,7 @@
 ---
-// Hero section — badge, headline, CTAs, trust checkmarks, and image with floating card
+// Hero section — badge, headline, CTAs, trust checkmarks, and paint-by-numbers animation with floating card
+import PaintStroke from './PaintStroke.tsx';
+
 const trustItems = ['Envío a todo el país', 'Retrato ilustrado a mano', 'Apoya refugios locales'];
 ---
 
@@ -41,15 +43,12 @@ const trustItems = ['Envío a todo el país', 'Retrato ilustrado a mano', 'Apoya
       </div>
     </div>
 
-    <!-- Right: Hero Image -->
+    <!-- Right: Paint-by-numbers Animation -->
     <div class="reveal reveal-delay-1 flex-[1_1_340px] min-w-[300px] relative">
-      <div class="absolute -bottom-4 -right-4 top-6 left-6 bg-brand-orange/20 rounded-[28px]" aria-hidden="true"></div>
-      <img
-        src="/hero-green.png"
-        alt="Persona con su perro usando sudadera personalizada"
-        class="relative w-full rounded-[28px] object-cover shadow-2xl shadow-brand-dark/20"
-      />
-      <div class="absolute left-4 bottom-4 sm:left-5 sm:bottom-5 bg-white/95 backdrop-blur rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg shadow-brand-dark/15">
+      <div class="relative w-full">
+        <PaintStroke client:visible width="100%" />
+      </div>
+      <div class="mt-4 sm:mt-0 sm:absolute sm:left-5 sm:bottom-5 bg-white/95 backdrop-blur rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg shadow-brand-dark/15">
         <span class="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center text-lg" aria-hidden="true">🎨</span>
         <div>
           <div class="text-sm font-extrabold text-brand-dark">Tu mascota, tu diseño</div>
