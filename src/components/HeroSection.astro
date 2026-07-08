@@ -1,46 +1,59 @@
 ---
-// Hero section — headline, subtext, CTA buttons, and image placeholder
+// Hero section — badge, headline, CTAs, trust checkmarks, and image with floating card
+const trustItems = ['Envío a todo el país', 'Retrato ilustrado a mano', 'Apoya refugios locales'];
 ---
 
-<section class="bg-brand-cream">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-      <!-- Left: Text Content -->
-      <div class="reveal space-y-6">
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight text-brand-brown">
-          <span data-i18n="hero.headline1">Viste Tu Amor,</span><br />
-          <span class="text-brand-orange" data-i18n="hero.headline2">Pinta Tu Vínculo</span>
-        </h1>
-        <p class="text-lg text-brand-brown/80 max-w-md" data-i18n="hero.subtext">
-          Sudaderas personalizadas con tu mascota y kits de pintura por números para celebrar el vínculo entre tú y tu mejor amigo peludo.
-        </p>
-        <div class="flex flex-wrap gap-4">
-          <a
-            href="#categories"
-            class="bg-brand-brown text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-orange transition-colors"
-            data-i18n="hero.shopNow"
-          >
-            Comprar Ahora
-          </a>
-          <a
-            href="#how-it-works"
-            class="border-2 border-brand-brown text-brand-brown px-8 py-3 rounded-full font-semibold hover:bg-brand-brown hover:text-white transition-colors"
-            data-i18n="hero.howItWorks"
-          >
-            Cómo Funciona
-          </a>
-        </div>
+<section class="bg-brand-cream overflow-hidden">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-20 flex flex-wrap items-center gap-10 md:gap-16">
+    <!-- Left: Text Content -->
+    <div class="reveal flex-[1_1_400px] min-w-[300px]">
+      <div class="inline-flex items-center gap-2 bg-brand-tan rounded-full px-3.5 py-1.5 text-xs font-bold text-brand-brown tracking-wider uppercase mb-5">
+        Hecho a mano en Colombia
       </div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight text-brand-dark mb-5">
+        Viste tu amor,<br />
+        <span class="text-brand-orange">pinta tu vínculo.</span>
+      </h1>
+      <p class="text-lg text-brand-brown leading-relaxed max-w-md mb-7">
+        Sudaderas personalizadas con el retrato de tu mascota y kits de pintura por números para celebrar a tu mejor amigo peludo.
+      </p>
+      <div class="flex flex-wrap gap-3 mb-7">
+        <a
+          href="#categories"
+          class="bg-brand-orange text-white px-7 py-3.5 rounded-full font-bold shadow-lg shadow-brand-orange/35 hover:bg-brand-brown transition-colors"
+        >
+          Comprar ahora
+        </a>
+        <a
+          href="#how-it-works"
+          class="bg-white text-brand-dark px-7 py-3.5 rounded-full font-bold border-[1.5px] border-brand-tan hover:border-brand-brown transition-colors"
+        >
+          Cómo funciona
+        </a>
+      </div>
+      <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-brand-brown">
+        {trustItems.map((item) => (
+          <span class="flex items-center gap-1.5">
+            <span class="text-brand-orange" aria-hidden="true">✓</span>
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
 
-      <!-- Right: Hero Image -->
-      <div class="reveal reveal-delay-1 flex justify-center">
-        <div class="relative w-full max-w-lg">
-          <div class="absolute inset-0 bg-brand-orange/20 rounded-3xl rotate-3"></div>
-          <img
-            src="/hero-green.png"
-            alt="Person with dog"
-            class="relative w-full rounded-3xl object-cover shadow-lg"
-          />
+    <!-- Right: Hero Image -->
+    <div class="reveal reveal-delay-1 flex-[1_1_340px] min-w-[300px] relative">
+      <div class="absolute -bottom-4 -right-4 top-6 left-6 bg-brand-orange/20 rounded-[28px]" aria-hidden="true"></div>
+      <img
+        src="/hero-green.png"
+        alt="Persona con su perro usando sudadera personalizada"
+        class="relative w-full rounded-[28px] object-cover shadow-2xl shadow-brand-dark/20"
+      />
+      <div class="absolute left-4 bottom-4 sm:left-5 sm:bottom-5 bg-white/95 backdrop-blur rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg shadow-brand-dark/15">
+        <span class="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center text-lg" aria-hidden="true">🎨</span>
+        <div>
+          <div class="text-sm font-extrabold text-brand-dark">Tu mascota, tu diseño</div>
+          <div class="text-xs text-brand-brown">Sube una foto y nosotros hacemos el resto</div>
         </div>
       </div>
     </div>

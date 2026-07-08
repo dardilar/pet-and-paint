@@ -1,47 +1,56 @@
 ---
-// Featured Categories — two product category cards
+// Featured Categories — two image-backed category cards with dark gradient overlay
+const categories = [
+  {
+    href: '/productos#buzo',
+    image: '/custom-hoddie.png',
+    alt: 'Sudadera personalizada con mascota',
+    title: 'Sudaderas Personalizadas',
+    desc: 'Luce a tu mascota con orgullo en una sudadera diseñada a medida.',
+    cta: 'Ver sudaderas →',
+  },
+  {
+    href: '/productos#kit',
+    image: '/pet-paint-kit.png',
+    alt: 'Kit de pintura por números de mascota',
+    title: 'Kits de Pintura por Números',
+    desc: 'Crea una obra maestra de tu mascota, un número a la vez.',
+    cta: 'Ver kits →',
+  },
+];
 ---
 
-<section id="categories" class="bg-brand-white py-16 md:py-24">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="reveal text-3xl md:text-4xl font-serif font-bold text-center mb-12 text-brand-brown" data-i18n="categories.title">
-      Nuestras Categorías Destacadas
-    </h2>
-
-    <div class="grid md:grid-cols-2 gap-8">
-      <!-- Custom Pet Hoodies -->
-      <div class="reveal group block bg-brand-cream rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-        <div class="aspect-4/3 bg-brand-tan flex items-center justify-center overflow-hidden">
-          <img src="/custom-hoddie.png" alt="Custom Pet Hoodies" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        </div>
-        <div class="p-6">
-          <h3 class="text-xl font-serif font-bold text-brand-brown group-hover:text-brand-orange transition-colors" data-i18n="categories.hoodies.title">
-            Sudaderas Personalizadas con Mascotas
-          </h3>
-          <p class="mt-2 text-brand-brown/70" data-i18n="categories.hoodies.desc">Luce a tu mascota con orgullo en nuestras sudaderas diseñadas a medida con tu amigo peludo.</p>
-          <a href="/shop#hoodies" class="text-brand-orange hover:underline mt-2 inline-flex items-center gap-1 font-semibold">
-            <span data-i18n="categories.hoodies.cta">Ver Sudaderas</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-narrow-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M15 16l4 -4" /><path d="M15 8l4 4" /></svg>
-          </a>
-        </div>
+<section id="categories" class="bg-brand-white py-14 md:py-24">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="reveal flex items-end justify-between gap-5 flex-wrap mb-9">
+      <div>
+        <div class="text-xs font-extrabold tracking-widest uppercase text-brand-orange mb-2.5">Categorías</div>
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-brand-dark">Dos formas de celebrar a tu mascota</h2>
       </div>
+      <a href="/productos" class="text-sm font-bold text-brand-orange hover:text-brand-brown transition-colors">Ver productos →</a>
+    </div>
 
-      <!-- Pet Paint by Number Kits -->
-      <div class="reveal reveal-delay-1 group block bg-brand-cream rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-        <div class="aspect-4/3 bg-brand-tan flex items-center justify-center overflow-hidden">
-          <img src="/pet-paint-kit.png" alt="Pet Paint by Number Kits" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        </div>
-        <div class="p-6">
-          <h3 class="text-xl font-serif font-bold text-brand-brown group-hover:text-brand-orange transition-colors" data-i18n="categories.kits.title">
-            Kits de Pintura por Números de Mascotas
-          </h3>
-          <p class="mt-2 text-brand-brown/70" data-i18n="categories.kits.desc">Crea una obra maestra de tu mascota con nuestros kits de pintura por números fáciles de seguir.</p>
-          <a href="/shop#paint-kits" class="text-brand-orange hover:underline mt-2 inline-flex items-center gap-1 font-semibold">
-            <span data-i18n="categories.kits.cta">Ver Kits de Pintura</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brush"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21v-4a4 4 0 1 1 4 4h-4" /><path d="M21 3a16 16 0 0 0 -12.8 10.2" /><path d="M21 3a16 16 0 0 1 -10.2 12.8" /><path d="M10.6 9a9 9 0 0 1 4.4 4.4" /></svg>
-          </a>
-        </div>
-      </div>
+    <div class="grid md:grid-cols-2 gap-6">
+      {categories.map((cat, i) => (
+        <a
+          href={cat.href}
+          class:list={['reveal', i === 1 && 'reveal-delay-1', 'group relative block rounded-3xl overflow-hidden bg-brand-tan aspect-[16/11] text-white shadow-sm hover:shadow-xl hover:shadow-brand-dark/25 transition-shadow']}
+        >
+          <img
+            src={cat.image}
+            alt={cat.alt}
+            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-brand-dark/10 to-transparent" aria-hidden="true"></div>
+          <div class="absolute left-6 right-6 bottom-6">
+            <h3 class="text-xl md:text-2xl font-extrabold tracking-tight mb-1.5">{cat.title}</h3>
+            <p class="text-sm text-white/85 leading-relaxed mb-3">{cat.desc}</p>
+            <span class="inline-flex items-center gap-1.5 text-sm font-bold bg-white/20 backdrop-blur border border-white/35 rounded-full px-4 py-2">
+              {cat.cta}
+            </span>
+          </div>
+        </a>
+      ))}
     </div>
   </div>
 </section>

@@ -1,15 +1,5 @@
 @import "tailwindcss";
 
-@keyframes pan-left {
-  0% { transform: scale(1.03) translate(2%, -0.5%); }
-  100% { transform: scale(1.03) translate(-2%, 0.5%); }
-}
-
-@keyframes pan-right {
-  0% { transform: scale(1.03) translate(-2%, 0.5%); }
-  100% { transform: scale(1.03) translate(2%, -0.5%); }
-}
-
 /* Scroll-triggered reveal animations */
 .reveal {
   opacity: 0;
@@ -26,6 +16,12 @@
 @keyframes pulse-heart {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.08); }
+}
+
+/* Floating price badge on product galleries */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 @theme {

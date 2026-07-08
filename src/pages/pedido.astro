@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import OrderForm from '../components/OrderForm';
+---
+
+<Layout title="Pedido Personalizado — Pet & Paint">
+  <Navbar active="pedido" />
+  <main class="py-10 md:py-16 pb-16 md:pb-24 px-4 sm:px-6 min-h-screen">
+    <div class="max-w-[660px] mx-auto">
+      <div class="text-center mb-9">
+        <h1 class="text-3xl md:text-4xl lg:text-[44px] font-extrabold tracking-tight text-brand-dark mb-3">
+          Crea tu pedido personalizado
+        </h1>
+        <p class="text-brand-brown max-w-md mx-auto leading-relaxed">
+          Elige un producto, sube la foto de tu mascota y nosotros nos encargamos del resto.
+        </p>
+      </div>
+      <OrderForm client:only="react" />
+    </div>
+  </main>
+  <Footer />
+</Layout>

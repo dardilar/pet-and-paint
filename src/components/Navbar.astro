@@ -1,39 +1,56 @@
 ---
-// Navbar component — sticky top navigation with mobile hamburger menu
+// Navbar — sticky top navigation with blur background and mobile hamburger menu
+interface Props {
+  active?: 'productos' | 'pedido';
+}
+const { active } = Astro.props;
+
+const links = [
+  { href: '/#mission', label: 'Nuestra Misión', key: 'mission' },
+  { href: '/#how-it-works', label: 'Cómo Funciona', key: 'how' },
+  { href: '/productos', label: 'Productos', key: 'productos' },
+  { href: '/pedido', label: 'Pedido Personalizado', key: 'pedido' },
+];
 ---
 
-<header class="w-full bg-brand-white shadow-sm sticky top-0 z-50">
-  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+<header class="w-full sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-brand-tan">
+  <nav class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center gap-7 h-16">
     <!-- Logo -->
-    <a href="/" class="flex items-center gap-2">
-      <svg class="w-8 h-8 text-brand-brown" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4.5-2c-.83 0-1.5.67-1.5 1.5S6.67 11 7.5 11 9 10.33 9 9.5 8.33 8 7.5 8zm9 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5S17.33 8 16.5 8zm-4.5-4c-.83 0-1.5.67-1.5 1.5S11.17 7 12 7s1.5-.67 1.5-1.5S12.83 4 12 4zm0 12c-2.21 0-4 1.12-4 2.5S9.79 21 12 21s4-1.12 4-2.5S14.21 16 12 16z"/>
-      </svg>
-      <span class="text-xl font-serif font-bold text-brand-brown">Pet & Paint</span>
+    <a href="/" class="flex items-center gap-2.5 font-extrabold text-lg tracking-tight text-brand-dark">
+      <span class="w-[34px] h-[34px] rounded-xl text-white grid place-items-center text-base" aria-hidden="true">🐾</span>
+      Pet & Paint
     </a>
 
     <!-- Desktop Nav Links -->
-    <div class="hidden md:flex items-center gap-8">
-      <a href="/shop" class="text-brand-brown hover:text-brand-orange transition-colors" data-i18n="nav.shop">Tienda</a>
-      <a href="/order" class="text-brand-brown hover:text-brand-orange transition-colors" data-i18n="nav.customOrder">Pedido Personalizado</a>
-      <a href="/#mission" class="text-brand-brown hover:text-brand-orange transition-colors" data-i18n="nav.mission">Nuestra Misión</a>
-      <a href="/#how-it-works" class="text-brand-brown hover:text-brand-orange transition-colors" data-i18n="nav.howItWorks">Cómo Funciona</a>
-      <a href="/order" class="bg-brand-brown text-white px-5 py-2 rounded-full hover:bg-brand-orange transition-colors" data-i18n="nav.orderNow">
-        Pedir Ahora
-      </a>
-      <!-- Language toggle -->
-      <div class="flex items-center gap-1 border border-brand-tan rounded-full px-3 py-1">
-        <button data-lang-btn="es" class="text-sm text-brand-brown transition-all cursor-pointer" style="font-weight:700">ES</button>
-        <span class="text-brand-brown/30 select-none">|</span>
-        <button data-lang-btn="en" class="text-sm text-brand-brown transition-all cursor-pointer" style="opacity:0.4">EN</button>
-      </div>
+    <div class="hidden md:flex items-center gap-6 ml-auto">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class:list={[
+            'text-sm transition-colors',
+            active === link.key
+              ? 'font-extrabold text-brand-dark border-b-2 border-brand-orange pb-0.5'
+              : 'font-semibold text-brand-brown hover:text-brand-orange',
+          ]}
+        >
+          {link.label}
+        </a>
+      ))}
     </div>
+    <a
+      href="/pedido"
+      class="hidden md:inline-block bg-brand-brown text-white text-sm font-bold px-5 py-2.5 rounded-full hover:bg-brand-dark transition-colors"
+    >
+      Pedir Ahora
+    </a>
 
     <!-- Mobile hamburger button -->
     <button
       id="mobile-menu-btn"
-      class="md:hidden p-2 text-brand-brown"
-      aria-label="Toggle menu"
+      class="md:hidden ml-auto p-2 text-brand-brown"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
     >
       <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -42,17 +59,21 @@
   </nav>
 
   <!-- Mobile menu (hidden by default) -->
-  <div id="mobile-menu" class="hidden md:hidden px-4 pb-4 space-y-2">
-    <a href="/shop" class="block py-2 text-brand-brown hover:text-brand-orange" data-i18n="nav.shop">Tienda</a>
-    <a href="/order" class="block py-2 text-brand-brown hover:text-brand-orange" data-i18n="nav.customOrder">Pedido Personalizado</a>
-    <a href="/#mission" class="block py-2 text-brand-brown hover:text-brand-orange" data-i18n="nav.mission">Nuestra Misión</a>
-    <a href="/#how-it-works" class="block py-2 text-brand-brown hover:text-brand-orange" data-i18n="nav.howItWorks">Cómo Funciona</a>
-    <!-- Mobile language toggle -->
-    <div class="flex items-center gap-2 pt-2 border-t border-brand-tan/50">
-      <button data-lang-btn="es" class="text-sm text-brand-brown transition-all cursor-pointer" style="font-weight:700">🇨🇴 ES</button>
-      <span class="text-brand-brown/30 select-none">|</span>
-      <button data-lang-btn="en" class="text-sm text-brand-brown transition-all cursor-pointer" style="opacity:0.4">🇺🇸 EN</button>
-    </div>
+  <div id="mobile-menu" class="hidden md:hidden px-4 pb-4 space-y-1 border-t border-brand-tan/60 bg-white/95">
+    {links.map((link) => (
+      <a
+        href={link.href}
+        class:list={[
+          'block py-2.5 text-sm',
+          active === link.key ? 'font-extrabold text-brand-dark' : 'font-semibold text-brand-brown hover:text-brand-orange',
+        ]}
+      >
+        {link.label}
+      </a>
+    ))}
+    <a href="/pedido" class="inline-block mt-2 bg-brand-brown text-white text-sm font-bold px-5 py-2.5 rounded-full hover:bg-brand-dark transition-colors">
+      Pedir Ahora
+    </a>
   </div>
 </header>
 
@@ -60,6 +81,7 @@
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
   btn?.addEventListener('click', () => {
-    menu?.classList.toggle('hidden');
+    const isOpen = !menu?.classList.toggle('hidden');
+    btn.setAttribute('aria-expanded', String(isOpen));
   });
 </script>

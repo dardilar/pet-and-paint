@@ -3,51 +3,23 @@
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="bg-brand-dark text-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-      <!-- Brand column -->
-      <div class="space-y-4">
-        <span class="text-2xl font-serif font-bold">Pet & Paint</span>
-        <p class="text-white/70 text-sm" data-i18n="footer.tagline">
-          Celebrando el vínculo entre las mascotas y sus personas a través del arte vestible personalizado y kits creativos.
-        </p>
-      </div>
+<footer class="bg-brand-dark text-brand-tan border-t border-brand-tan/20">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex flex-wrap items-center justify-between gap-5">
+    <!-- Brand -->
+    <a href="/" class="flex items-center gap-2.5 font-extrabold text-lg text-white">
+      <span class="w-8 h-8 rounded-lg bg-brand-orange text-white grid place-items-center text-sm" aria-hidden="true">🐾</span>
+      Pet & Paint
+    </a>
 
-      <!-- Shop column -->
-      <div>
-        <h4 class="font-semibold mb-4" data-i18n="footer.shopCol">Tienda</h4>
-        <ul class="space-y-2 text-white/70 text-sm">
-          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.shopHoodies">Sudaderas Personalizadas</a></li>
-          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.shopKits">Kits de Pintura por Números</a></li>
-          <li><a href="/order" class="hover:text-white transition-colors" data-i18n="footer.shopOrder">Pedido Personalizado</a></li>
-        </ul>
-      </div>
+    <!-- Links -->
+    <nav class="flex items-center gap-7 flex-wrap">
+      <a href="/" class="text-sm text-brand-orange hover:text-white transition-colors">Inicio</a>
+      <a href="/productos" class="text-sm text-brand-orange hover:text-white transition-colors">Productos</a>
+      <a href="/#mission" class="text-sm text-brand-orange hover:text-white transition-colors">Nuestra Misión</a>
+      <a href="/pedido" class="text-sm text-brand-orange hover:text-white transition-colors">Contacto</a>
+    </nav>
 
-      <!-- Company column -->
-      <div>
-        <h4 class="font-semibold mb-4" data-i18n="footer.companyCol">Empresa</h4>
-        <ul class="space-y-2 text-white/70 text-sm">
-          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.companyAbout">Sobre Nosotros</a></li>
-          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.companyMission">Nuestra Misión</a></li>
-          <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.companyContact">Contacto</a></li>
-        </ul>
-      </div>
-
-      <!-- Connect column -->
-      <div>
-        <h4 class="font-semibold mb-4" data-i18n="footer.connectCol">Conecta</h4>
-        <ul class="space-y-2 text-white/70 text-sm">
-          <li><a href="#" class="hover:text-white transition-colors">Instagram</a></li>
-          <li><a href="#" class="hover:text-white transition-colors">Facebook</a></li>
-          <li><a href="#" class="hover:text-white transition-colors">TikTok</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Bottom bar -->
-    <div class="border-t border-white/20 mt-8 pt-8 text-center text-white/50 text-sm">
-      &copy; {currentYear} Pet & Paint. <span data-i18n="footer.copyright">Todos los derechos reservados.</span>
-    </div>
+    <!-- Copyright -->
+    <span class="text-xs text-brand-tan/60">&copy; {currentYear} Pet & Paint</span>
   </div>
 </footer>

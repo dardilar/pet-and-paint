@@ -7,9 +7,14 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
+  redirects: {
+    '/shop': '/productos',
+    '/order': '/pedido',
+  },
+
   vite: {
     plugins: [tailwindcss()],
   },
 
-  integrations: [react()]
+  integrations: [react()],
 });

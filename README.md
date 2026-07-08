@@ -1,6 +1,6 @@
 # Pet & Paint
 
-Custom pet hoodies and paint-by-number kits — a minimal e-commerce site that takes orders via a custom form and follows up with a manual payment link. Bilingual (Spanish / English).
+Custom pet hoodies and paint-by-number kits — a minimal e-commerce site that takes orders via a custom form and follows up with a manual payment link. Spanish-only for now (the ES/EN toggle was removed in the 2026-07 revamp; it can be restored from git history).
 
 ## Tech stack
 
@@ -13,16 +13,36 @@ Custom pet hoodies and paint-by-number kits — a minimal e-commerce site that t
 | Photo uploads    | [Cloudinary](https://cloudinary.com) (unsigned preset)  |
 | Form submissions | [Web3Forms](https://web3forms.com) (free tier)          |
 | Hosting          | Vercel                                                  |
-| i18n             | Custom client-side toggle (ES default / EN)             |
+
+## Pages
+
+| Route         | Content                                                              |
+| ------------- | -------------------------------------------------------------------- |
+| `/`           | Home: announcement bar, hero, categories, mission, how-it-works      |
+| `/productos`  | Editorial product pages: "El Buzo" + "El Kit de Pintura" + buy flow  |
+| `/pedido`     | 3-step custom order form                                             |
+
+`/shop` and `/order` redirect to `/productos` and `/pedido` (see `astro.config.mjs`).
+
+## Catalog
+
+Two products × three styles, defined in `src/data/products.ts` (single source of truth for names, emoji, and COP prices):
+
+|               | Cara de Mascota | Huella de Mascota | Ambas       |
+| ------------- | --------------- | ----------------- | ----------- |
+| Sudadera      | 89.990 COP      | 89.990 COP        | 99.990 COP  |
+| Kit de Pintura| 49.990 COP      | 49.990 COP        | 59.990 COP  |
+
+Hoodies also require a size (S–2XL). The "Ambas" style asks for two photos (face + paw).
 
 ## Project structure
 
 ```
 src/
 ├── pages/
-│   ├── index.astro       # home: hero, categories, mission, how-it-works
-│   ├── shop.astro        # product grids
-│   └── order.astro       # mounts <OrderForm>
+│   ├── index.astro       # home
+│   ├── productos.astro   # product detail sections + payment flow explainer
+│   └── pedido.astro      # mounts <OrderForm>
 ├── components/
 │   ├── OrderForm.tsx     # 3-step React form (product → photo → details)
 │   ├── HeroSection.astro
@@ -31,17 +51,16 @@ src/
 │   ├── MissionSection.astro
 │   ├── Navbar.astro
 │   └── Footer.astro
-├── data/products.ts      # hoodie + paint-kit catalog, COP price formatter
-├── i18n/translations.ts  # ES + EN dictionaries
-├── layouts/Layout.astro  # head, fonts, i18n runtime
-└── styles/global.css
+├── data/products.ts      # catalog + COP price formatter
+├── layouts/Layout.astro  # head, fonts, reveal-on-scroll observer
+└── styles/global.css     # Tailwind theme (brand palette) + animations
 ```
 
 ## Setup
 
 ```sh
 npm install
-cp .env.example .env   # if you have one — otherwise create .env (see below)
+cp .env.example .env   # then fill in the keys below
 npm run dev
 ```
 
@@ -65,44 +84,33 @@ The `PUBLIC_` prefix exposes them to the browser — required because uploads ha
 
 ## How orders work
 
-1. Customer fills the 3-step form: **Choose Product → Upload Photo(s) → Details**.
+1. Customer fills the 3-step form: **Elegir Producto → Subir Foto → Tus Datos**.
 2. Photos are uploaded directly from the browser to Cloudinary (folder: `pet-and-paint-orders`).
-3. Order details + Cloudinary URL(s) are sent to Web3Forms, which emails the merchant.
+3. Order details + Cloudinary URL(s) are sent to Web3Forms, which emails the merchant. A hidden honeypot (`botcheck`) drops bot submissions.
 4. Email subject includes a generated order reference like `PP-A3K7QM`. The same reference is shown to the customer on the success screen.
-5. Merchant manually replies with a payment link (Nequi / Bancolombia / PSE / etc.).
+5. Merchant manually replies with a payment link (Nequi / Bancolombia / PSE / etc.) — no payment is taken until the photo is approved.
 
 ## Pending tasks
 
 ### Content
 
-- [ ] Add real product images at `public/products/*.png`
-  - `hoodie-face.png`, `hoodie-fingerprint.png`, `hoodie-both.png`
-  - `kit-numbers.png`, `kit-canvas.png`
-- [ ] Replace footer dead links (currently `href="#"`):
-  - Custom Hoodies / Paint Kits / About Us / Mission / Contact / Instagram / Facebook / TikTok
-- [ ] Mission section "Saber Más" button — point to a real shelter partner page
-- [ ] Final pricing values (currently placeholder COP amounts in `src/data/products.ts`)
+- [ ] Real product gallery photos for `/productos` (thumbnails currently reuse marketing images)
+- [ ] Footer social links are dead (`href="#"`): Instagram / Facebook / TikTok
+- [ ] Mission CTA ("Conoce nuestra misión") — point to a real shelter partner page
+- [ ] Confirm final pricing in `src/data/products.ts`
 
 ### Conversion / trust
 
 - [ ] Customer auto-confirmation email (Web3Forms Auto Response is Pro-only — use **EmailJS** or **Resend** instead)
 - [ ] WhatsApp ordering button (sticky float + after submit) — high impact in LATAM
 - [ ] Sizing chart (modal / accordion in step 1)
-- [ ] Production + shipping time copy ("Ready in 7-10 days, ships in 2-3")
 - [ ] Payment methods preview near submit ("Nequi · Bancolombia · PSE · Tarjeta")
 - [ ] Social proof: testimonials, "+N pets created" counter
 - [ ] Portfolio / gallery of past work
 
-### Polish
-
-- [ ] Decide currency display (COP vs USD) — current format is `89.990 COP`
-- [ ] Resolve `🎨` emoji collision (used both for paint-kit type and `kit-numbers` design)
-- [ ] Better hero alt text for SEO/accessibility
-- [ ] Pick a non-cart icon for "Choose Product" step (no cart yet)
-- [ ] Add honeypot/botcheck field to OrderForm
-
 ### Post-MVP
 
+- [ ] Restore the EN language toggle (removed in revamp; see git history before 2026-07)
 - [ ] Real shopping cart + Stripe Checkout / Mercado Pago
 - [ ] Per-design example galleries (mini carousel on design select)
 - [ ] OG images for product/order share previews
