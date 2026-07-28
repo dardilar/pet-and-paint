@@ -3,7 +3,7 @@ import type { FormEvent } from 'react';
 import {
   PRODUCTS,
   STYLES,
-  STYLE_KEYS,
+  getStyleKeys,
   SIZES,
   formatPrice,
   getPrice,
@@ -349,7 +349,7 @@ export default function OrderForm() {
   const canSubmit = name.trim().length >= 2 && EMAIL_REGEX.test(email.trim());
 
   const photoHint =
-    style === 'paw' ? TEXT.photoHintPaw : style === 'both' ? TEXT.photoHintBoth : TEXT.photoHintFace;
+    style === 'both' ? TEXT.photoHintBoth : TEXT.photoHintFace;
 
   const summaryTitle = product && style ? `${PRODUCTS[product].name} — ${STYLES[style].name}` : '';
   const summaryDetail = product === 'hoodie' ? `${TEXT.summarySize} ${size ?? ''}` : TEXT.summaryKitDetail;
@@ -510,6 +510,11 @@ export default function OrderForm() {
                     onClick={() => {
                       setProduct(key);
                       if (key !== 'hoodie') setSize(null);
+                      if (style && !getStyleKeys(key).includes(style)) {
+                        setStyle(null);
+                        setPhoto2(null);
+                        setPhoto2Error('');
+                      }
                     }}
                     className={`flex flex-col items-start gap-1.5 rounded-2xl p-5 text-left transition-colors ${cardClass(isSelected)}`}
                   >
@@ -528,7 +533,7 @@ export default function OrderForm() {
               <div className="mb-7">
                 <h3 className="font-extrabold text-brand-dark mb-3.5">{TEXT.step1SelectStyle}</h3>
                 <div className="flex flex-col gap-3">
-                  {STYLE_KEYS.map((key) => {
+                  {getStyleKeys(product).map((key) => {
                     const isSelected = style === key;
                     return (
                       <button
