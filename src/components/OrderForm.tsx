@@ -66,9 +66,10 @@ const TEXT = {
     'El archivo original, no una captura de pantalla',
   ],
   petNameLabel: 'Nombre de tu mascota — va bordado debajo del retrato',
+  petNameOptional: '(opcional)',
   petNameWarning: 'Revísalo bien: se borda tal cual lo escribas y no tiene arreglo.',
   priceShipping: '+ envío',
-  paymentLinkEta: 'Te enviamos el link de pago en menos de [X] horas',
+  paymentLinkEta: 'Te enviamos el link de pago en menos de 24 horas',
   photoReady: '✓ Foto lista',
   changePhoto: 'Cambiar',
   step3Title: 'Tus datos y revisión',
@@ -539,7 +540,7 @@ export default function OrderForm() {
   const canAdvanceStep1 =
     product !== null && style !== null && (!needsSize || size !== null) && (!isApparel || selectedColor !== null);
   const canAdvanceStep2 =
-    photo !== null && (!needsSecondPhoto || photo2 !== null) && (!isApparel || petName.trim().length > 0);
+    photo !== null && (!needsSecondPhoto || photo2 !== null);
   const canSubmit = name.trim().length >= 2 && EMAIL_REGEX.test(email.trim());
 
   const photoHint =
@@ -613,7 +614,7 @@ export default function OrderForm() {
       if (selectedColor) {
         formData.append('Color', `${selectedColor.name} (${selectedColor.hex})`);
       }
-      if (isApparel) {
+      if (isApparel && petName.trim()) {
         formData.append('Pet Name', petName.trim());
       }
       if (instructions.trim()) {
@@ -888,15 +889,13 @@ export default function OrderForm() {
             {isApparel && (
               <div className="mb-7">
                 <label className="block text-sm font-extrabold text-brand-dark mb-1.5" htmlFor="pet-name">
-                  {TEXT.petNameLabel} <span className="text-brand-orange">*</span>
+                  {TEXT.petNameLabel} <span className="font-semibold text-brand-brown">{TEXT.petNameOptional}</span>
                 </label>
                 <input
                   id="pet-name"
                   type="text"
                   value={petName}
                   onChange={(e) => setPetName(e.target.value)}
-                  required
-                  aria-required="true"
                   aria-describedby="pet-name-warning"
                   maxLength={MAX_PET_NAME_LENGTH}
                   autoComplete="off"
