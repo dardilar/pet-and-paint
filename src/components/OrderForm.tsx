@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useId } from 'react';
 import type { FormEvent } from 'react';
 import {
   PRODUCTS,
@@ -11,14 +11,16 @@ import {
   type ProductKey,
   type StyleKey,
   type Size,
+  type Color,
 } from '../data/products';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ACCEPTED_TYPES = ['image/jpeg', 'image/png'];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_NAME_LENGTH = 100;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_NOTES_LENGTH = 500;
+const MAX_PET_NAME_LENGTH = 30;
 const SUBMISSION_TIMEOUT = 60_000;
 const WEB3FORMS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY;
 
@@ -33,16 +35,40 @@ const TEXT = {
   step1Title: 'Elige tu producto',
   step1From: 'desde',
   step1SelectStyle: 'Selecciona un estilo',
-  step1SelectSize: 'Selecciona una talla',
+  step1SelectSize: 'Talla:',
+  colorLabel: 'Color:',
+  colorsBest: 'Mejores para el bordado',
+  colorsOther: 'Otros colores',
+  colorDarkWarning:
+    'En colores oscuros el bordado de mascotas de pelaje claro luce más. Al revisar tu foto te confirmamos si combina bien.',
+  sizeGuideOpen: 'Guía de tallas',
+  sizeGuideTitle: 'Guía de tallas',
+  sizeGuideIntro: 'Medidas en centímetros. Si estás entre dos tallas, elige la más grande.',
+  sizeGuideUnisex: 'Tallaje unisex.',
+  sizeGuideUnisexNote: 'Si prefieres un look más ajustado, elige una talla menos.',
+  sizeGuideVariance: 'Las medidas pueden variar ±2 cm según el estilo de la prenda.',
+  sizeGuideClose: 'Cerrar guía de tallas',
+  sizeGuideHeaders: ['Talla', 'Ancho', 'Alto', 'Mangas'],
   step2Title: 'Sube la foto de tu mascota',
   step2TitleBoth: 'Sube las fotos de tu mascota',
-  photoHintFace: 'Sube una foto clara de tu mascota, con buena luz y de frente. JPEG, PNG o WebP de hasta 10 MB.',
-  photoHintPaw: 'Sube una foto clara de la huella de tu mascota. JPEG, PNG o WebP de hasta 10 MB.',
-  photoHintBoth: 'Sube una foto de la cara de tu mascota y otra de su huella. JPEG, PNG o WebP de hasta 10 MB cada una.',
+  photoHintFace: 'Sube una foto de tu mascota. JPEG o PNG de hasta 10 MB.',
+  photoHintPaw: 'Sube una foto clara de la huella de tu mascota. JPEG o PNG de hasta 10 MB.',
+  photoHintBoth: 'Sube una foto de la cara de tu mascota y otra de su huella. JPEG o PNG de hasta 10 MB cada una.',
   photoLabelFace: 'Foto de tu mascota',
   photoLabelPaw: 'Foto de la huella',
   uploadCta: 'Haz clic para subir o arrastra y suelta',
-  uploadHint: 'JPEG, PNG o WebP de hasta 10 MB',
+  uploadHint: 'JPEG o PNG de hasta 10 MB',
+  tipsTitle: 'Para que quede bien',
+  tips: [
+    'De frente, que se le vea bien la cara',
+    'Con luz natural, sin flash',
+    'Una sola mascota por foto',
+    'El archivo original, no una captura de pantalla',
+  ],
+  petNameLabel: 'Nombre de tu mascota — va bordado debajo del retrato',
+  petNameWarning: 'Revísalo bien: se borda tal cual lo escribas y no tiene arreglo.',
+  priceShipping: '+ envío',
+  paymentLinkEta: 'Te enviamos el link de pago en menos de [X] horas',
   photoReady: '✓ Foto lista',
   changePhoto: 'Cambiar',
   step3Title: 'Tus datos y revisión',
@@ -55,6 +81,10 @@ const TEXT = {
   summaryTitle: 'Resumen del pedido',
   summarySize: 'Talla:',
   summaryKitDetail: 'Kit completo con lienzo y pinturas',
+  apparelFeatures: 'Bordado real, no estampado · Algodón 300 gr',
+  donationPrefix: '',
+  donationAmount: '',
+  donationShelter: '',
   next: 'Siguiente →',
   back: '← Atrás',
   submit: 'Enviar pedido',
@@ -66,7 +96,7 @@ const TEXT = {
   viewProducts: 'Ver productos',
   newOrder: 'Hacer otro pedido',
   errorFileSize: 'El archivo supera los 10 MB. Por favor sube una imagen más liviana.',
-  errorFileType: 'Formato no permitido. Sube una imagen JPEG, PNG o WebP.',
+  errorFileType: 'Formato no permitido. Sube una imagen JPEG o PNG.',
   errorMultipleFiles: 'Por favor sube un solo archivo a la vez.',
   errorUploadFailed: 'No pudimos subir la foto. Inténtalo de nuevo.',
   errorTimeout: 'La solicitud tardó demasiado. Revisa tu conexión e inténtalo de nuevo.',
@@ -113,11 +143,30 @@ const backBtn = 'text-brand-brown hover:text-brand-orange transition-colors font
 const inputClass =
   'w-full px-4 py-3 rounded-2xl border-[1.5px] border-brand-tan bg-[#FAF7F3] text-brand-dark placeholder:text-[#B8A794] focus:border-brand-orange focus:bg-white focus:outline-none transition-colors';
 
+// Swatches and size pills share one selection pattern: espresso border + terracotta outer ring.
+function pickerClass(isSelected: boolean) {
+  return isSelected
+    ? 'border-2 border-[#3A2B22] ring-2 ring-[#C47A47] ring-offset-2 ring-offset-white'
+    : 'border border-[#3A2B22]/15 hover:border-[#3A2B22]/50';
+}
+
 function cardClass(isSelected: boolean) {
   return isSelected
     ? 'border-2 border-brand-orange bg-[#FFF7F0]'
     : 'border-2 border-brand-tan bg-white hover:border-brand-orange/60';
 }
+
+// --- Icons ---
+
+const lineIconProps = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  'aria-hidden': true,
+};
 
 // --- Sub-components ---
 
@@ -200,67 +249,204 @@ function UploadZone({
   ariaLabel: string;
   onFileChange: (file: File) => void;
   onRemove: () => void;
-  onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDrop: (e: React.DragEvent<HTMLElement>) => void;
   onDragEnter: () => void;
   onDragLeave: () => void;
 }) {
+  const inputId = useId();
+  const errorId = `${inputId}-error`;
   return (
     <div className="space-y-2">
       {label && <p className="text-sm font-extrabold text-brand-dark">{label}</p>}
-      {preview ? (
-        <div className="flex items-center gap-4 border-[1.5px] border-brand-tan rounded-2xl p-4 bg-[#FAF7F3]">
-          <img src={preview} alt="Vista previa de la foto" className="w-24 h-24 rounded-xl object-cover shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-extrabold text-brand-dark truncate mb-0.5">{fileName}</div>
-            <div className="text-[13px] font-bold text-[#6B8F71]">{TEXT.photoReady}</div>
-          </div>
-          <button
-            type="button"
-            onClick={onRemove}
-            className="bg-white border-[1.5px] border-brand-tan rounded-full text-[13px] font-bold text-brand-brown px-4 py-2 hover:border-brand-orange hover:text-brand-orange transition-colors shrink-0"
-          >
-            {TEXT.changePhoto}
-          </button>
-        </div>
-      ) : (
-        <div
-          role="button"
-          tabIndex={0}
+      <div className="relative">
+        {/* Real input stays focusable and in the a11y tree; the label on top is the click/drop target. */}
+        <input
+          ref={inputRef}
+          id={inputId}
+          type="file"
+          accept={ACCEPTED_TYPES.join(',')}
           aria-label={ariaLabel}
-          className={`grid place-items-center gap-1 border-2 border-dashed rounded-[20px] px-6 py-12 text-center cursor-pointer transition-colors ${
-            dragActive
-              ? 'border-brand-orange bg-[#FFF9F3]'
-              : 'border-[#D4C4B2] bg-[#FAF7F3] hover:border-brand-orange hover:bg-[#FFF9F3]'
-          }`}
-          onClick={() => inputRef.current?.click()}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              inputRef.current?.click();
-            }
+          aria-describedby={error ? errorId : undefined}
+          className="peer absolute inset-0 w-full h-full opacity-0"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onFileChange(file);
           }}
-          onDragOver={(e) => e.preventDefault()}
-          onDragEnter={(e) => { e.preventDefault(); onDragEnter(); }}
-          onDragLeave={onDragLeave}
-          onDrop={onDrop}
-        >
-          <span className="w-[52px] h-[52px] rounded-full bg-brand-tan grid place-items-center text-[22px] mb-2" aria-hidden="true">📷</span>
-          <span className="text-[15px] font-bold text-brand-dark">{TEXT.uploadCta}</span>
-          <span className="text-xs text-[#8A6E4B]">{TEXT.uploadHint}</span>
-        </div>
-      )}
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) onFileChange(file);
-        }}
-      />
-      {error && <ErrorMessage message={error} />}
+        />
+        {preview ? (
+          <div className="relative flex items-center gap-4 border-[1.5px] border-brand-tan rounded-2xl p-4 bg-[#FAF7F3] peer-focus-visible:ring-2 peer-focus-visible:ring-[#C47A47]">
+            <img src={preview} alt="Vista previa de la foto" className="w-24 h-24 rounded-xl object-cover shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-extrabold text-brand-dark truncate mb-0.5">{fileName}</div>
+              <div className="text-[13px] font-bold text-[#6B8F71]">{TEXT.photoReady}</div>
+            </div>
+            <button
+              type="button"
+              onClick={onRemove}
+              className="bg-white border-[1.5px] border-brand-tan rounded-full text-[13px] font-bold text-brand-brown px-4 py-2 hover:border-brand-orange hover:text-brand-orange transition-colors shrink-0"
+            >
+              {TEXT.changePhoto}
+            </button>
+          </div>
+        ) : (
+          <label
+            htmlFor={inputId}
+            className={`relative grid place-items-center gap-1 border-2 border-dashed rounded-[20px] px-6 py-12 text-center cursor-pointer transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[#C47A47] peer-focus-visible:ring-offset-2 ${
+              dragActive
+                ? 'border-brand-orange bg-[#FFF9F3]'
+                : 'border-[#D4C4B2] bg-[#FAF7F3] hover:border-brand-orange hover:bg-[#FFF9F3]'
+            }`}
+            onDragOver={(e) => e.preventDefault()}
+            onDragEnter={(e) => { e.preventDefault(); onDragEnter(); }}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
+          >
+            <span className="w-[52px] h-[52px] rounded-full bg-brand-tan grid place-items-center text-[22px] mb-2" aria-hidden="true">📷</span>
+            <span className="text-[15px] font-bold text-brand-dark">{TEXT.uploadCta}</span>
+            <span className="text-xs text-[#8A6E4B]">{TEXT.uploadHint}</span>
+          </label>
+        )}
+      </div>
+      {error && <ErrorMessage message={error} id={errorId} />}
     </div>
+  );
+}
+
+function PhotoTips() {
+  return (
+    <aside className="bg-[#F3EDE7] rounded-2xl px-5 py-5" aria-labelledby="photo-tips-title">
+      <h3 id="photo-tips-title" className="font-extrabold text-[#3A2B22] mb-3">{TEXT.tipsTitle}</h3>
+      <ul className="space-y-2.5">
+        {TEXT.tips.map((tip) => (
+          <li key={tip} className="flex items-start gap-2 text-sm text-brand-brown leading-snug">
+            <svg {...lineIconProps} strokeWidth={2.5} className="w-4 h-4 mt-0.5 text-[#A9B99B] shrink-0">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            {tip}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
+}
+
+function ColorPicker({
+  colors,
+  value,
+  onChange,
+}: {
+  colors: Color[];
+  value: Color;
+  onChange: (id: string) => void;
+}) {
+  const groups = [
+    { label: TEXT.colorsBest, items: colors.filter((c) => c.light) },
+    { label: TEXT.colorsOther, items: colors.filter((c) => !c.light) },
+  ];
+  return (
+    <fieldset className="mb-7">
+      <legend className="font-extrabold text-brand-dark mb-3.5">
+        {TEXT.colorLabel} <span className="font-semibold text-brand-brown">{value.name}</span>
+      </legend>
+      {groups.map((group, i) => (
+        <div key={group.label} className={i > 0 ? 'mt-4 pt-4 border-t border-[#F3EDE7]' : ''}>
+          {i === 0 && <p className="text-xs font-bold text-[#8A6E4B] mb-2.5">{group.label}</p>}
+          <div role="group" aria-label={group.label} className="flex flex-wrap gap-2.5">
+            {group.items.map((c) => {
+              const isSelected = c.id === value.id;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  aria-label={c.name}
+                  aria-pressed={isSelected}
+                  title={c.name}
+                  onClick={() => onChange(c.id)}
+                  style={{ backgroundColor: c.hex }}
+                  className={`w-[38px] h-[38px] rounded-full transition-shadow ${pickerClass(isSelected)}`}
+                />
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      <p aria-live="polite" className={`text-sm text-[#C47A47] leading-relaxed ${value.light ? '' : 'mt-3'}`}>
+        {value.light ? '' : TEXT.colorDarkWarning}
+      </p>
+    </fieldset>
+  );
+}
+
+function SizeGuide() {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => dialogRef.current?.showModal()}
+        className="text-sm font-bold text-[#C47A47] underline underline-offset-2 hover:text-[#3A2B22] transition-colors"
+      >
+        {TEXT.sizeGuideOpen}
+      </button>
+      {/* Native modal dialog: Escape closes it and the rest of the page is inert while open, which traps focus. */}
+      <dialog
+        ref={dialogRef}
+        aria-labelledby={titleId}
+        onClose={() => triggerRef.current?.focus()}
+        onClick={(e) => {
+          if (e.target === dialogRef.current) dialogRef.current.close();
+        }}
+        className="m-auto p-0 w-[calc(100%-32px)] max-w-md rounded-3xl bg-[#FDFBF8] text-[#3A2B22] shadow-2xl backdrop:bg-[#3A2B22]/50"
+      >
+        <div className="p-6 sm:p-7">
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <h2 id={titleId} className="text-xl font-extrabold">{TEXT.sizeGuideTitle}</h2>
+            <button
+              type="button"
+              aria-label={TEXT.sizeGuideClose}
+              onClick={() => dialogRef.current?.close()}
+              className="w-9 h-9 -mt-1 -mr-1 rounded-full grid place-items-center text-xl hover:bg-[#F3EDE7] transition-colors"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <p className="text-sm text-brand-brown leading-relaxed mb-5">{TEXT.sizeGuideIntro}</p>
+          <table className="w-full text-sm text-center mb-5">
+            <thead>
+              <tr className="bg-[#F3EDE7]">
+                {TEXT.sizeGuideHeaders.map((h, i) => (
+                  <th
+                    key={h}
+                    scope="col"
+                    className={`py-2.5 font-extrabold ${i === 0 ? 'rounded-l-xl' : ''} ${i === TEXT.sizeGuideHeaders.length - 1 ? 'rounded-r-xl' : ''}`}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {SIZES.map((s) => (
+                <tr key={s.size} className="border-b border-[#F3EDE7] last:border-0">
+                  <th scope="row" className="py-2.5 font-extrabold">{s.size}</th>
+                  <td className="py-2.5 text-brand-brown">{s.ancho}</td>
+                  <td className="py-2.5 text-brand-brown">{s.alto}</td>
+                  <td className="py-2.5 text-brand-brown">{s.mangas}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="text-sm text-brand-brown leading-relaxed mb-1.5">
+            <strong className="text-[#3A2B22]">{TEXT.sizeGuideUnisex}</strong> {TEXT.sizeGuideUnisexNote}
+          </p>
+          <p className="text-xs text-[#8A6E4B] leading-relaxed">{TEXT.sizeGuideVariance}</p>
+        </div>
+      </dialog>
+    </>
   );
 }
 
@@ -273,6 +459,7 @@ export default function OrderForm() {
   const [product, setProduct] = useState<ProductKey | null>(null);
   const [style, setStyle] = useState<StyleKey | null>(null);
   const [size, setSize] = useState<Size | null>(null);
+  const [colorId, setColorId] = useState<string | null>(null);
 
   // Primary photo (pet face / paw depending on style)
   const [photo, setPhoto] = useState<File | null>(null);
@@ -288,6 +475,8 @@ export default function OrderForm() {
   const [dragCounter2, setDragCounter2] = useState(0);
   const file2InputRef = useRef<HTMLInputElement>(null);
 
+  const [petName, setPetName] = useState('');
+
   // Details
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -301,7 +490,10 @@ export default function OrderForm() {
   const stepHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const needsSecondPhoto = style === 'both';
-  const needsSize = product === 'hoodie';
+  const colors = product ? PRODUCTS[product].colors : null;
+  const selectedColor = colors?.find((c) => c.id === colorId) ?? null;
+  const isApparel = colors !== null;
+  const needsSize = isApparel;
 
   useEffect(() => {
     if (!photo) { setPhotoPreview(null); return; }
@@ -332,7 +524,7 @@ export default function OrderForm() {
     if (ref.current) ref.current.value = '';
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>, slot: 1 | 2) => {
+  const handleDrop = useCallback((e: React.DragEvent<HTMLElement>, slot: 1 | 2) => {
     e.preventDefault();
     if (slot === 1) setDragCounter(0); else setDragCounter2(0);
     if (e.dataTransfer.files.length > 1) {
@@ -344,15 +536,22 @@ export default function OrderForm() {
     if (file) handleFile(file, slot);
   }, [handleFile]);
 
-  const canAdvanceStep1 = product !== null && style !== null && (!needsSize || size !== null);
-  const canAdvanceStep2 = photo !== null && (!needsSecondPhoto || photo2 !== null);
+  const canAdvanceStep1 =
+    product !== null && style !== null && (!needsSize || size !== null) && (!isApparel || selectedColor !== null);
+  const canAdvanceStep2 =
+    photo !== null && (!needsSecondPhoto || photo2 !== null) && (!isApparel || petName.trim().length > 0);
   const canSubmit = name.trim().length >= 2 && EMAIL_REGEX.test(email.trim());
 
   const photoHint =
     style === 'both' ? TEXT.photoHintBoth : TEXT.photoHintFace;
 
   const summaryTitle = product && style ? `${PRODUCTS[product].name} — ${STYLES[style].name}` : '';
-  const summaryDetail = product === 'hoodie' ? `${TEXT.summarySize} ${size ?? ''}` : TEXT.summaryKitDetail;
+  const summaryLine = product && style
+    ? [PRODUCTS[product].name, STYLES[style].name, selectedColor?.name, needsSize ? size : null].filter(Boolean).join(' · ')
+    : '';
+  const summaryDetail = isApparel
+    ? [selectedColor?.name, `${TEXT.summarySize} ${size ?? ''}`].filter(Boolean).join(' · ')
+    : TEXT.summaryKitDetail;
   const price = product && style ? getPrice(product, style) : 0;
   const firstName = name.trim().split(' ')[0] || 'amigo';
 
@@ -361,10 +560,12 @@ export default function OrderForm() {
     setProduct(null);
     setStyle(null);
     setSize(null);
+    setColorId(null);
     setPhoto(null);
     setPhotoError('');
     setPhoto2(null);
     setPhoto2Error('');
+    setPetName('');
     setName('');
     setEmail('');
     setInstructions('');
@@ -408,6 +609,12 @@ export default function OrderForm() {
       formData.append('Price', formatPrice(price));
       if (needsSize && size) {
         formData.append('Size', size);
+      }
+      if (selectedColor) {
+        formData.append('Color', `${selectedColor.name} (${selectedColor.hex})`);
+      }
+      if (isApparel) {
+        formData.append('Pet Name', petName.trim());
       }
       if (instructions.trim()) {
         formData.append('Special Instructions', instructions.trim());
@@ -499,7 +706,7 @@ export default function OrderForm() {
             </h2>
 
             {/* Product cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-7">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-7">
               {(Object.keys(PRODUCTS) as ProductKey[]).map((key) => {
                 const isSelected = product === key;
                 return (
@@ -509,16 +716,20 @@ export default function OrderForm() {
                     aria-pressed={isSelected}
                     onClick={() => {
                       setProduct(key);
-                      if (key !== 'hoodie') setSize(null);
+                      // Keep the chosen color if the new garment has it; otherwise fall back to its first color.
+                      const nextColors = PRODUCTS[key].colors;
+                      if (nextColors && !nextColors.some((c) => c.id === colorId)) {
+                        setColorId(nextColors[0].id);
+                      }
                       if (style && !getStyleKeys(key).includes(style)) {
                         setStyle(null);
                         setPhoto2(null);
                         setPhoto2Error('');
                       }
                     }}
-                    className={`flex flex-col items-start gap-1.5 rounded-2xl p-5 text-left transition-colors ${cardClass(isSelected)}`}
+                    className={`flex flex-col items-start gap-1 rounded-2xl p-5 text-left transition-colors ${cardClass(isSelected)}`}
                   >
-                    <span className="text-[26px]" aria-hidden="true">{PRODUCTS[key].emoji}</span>
+                    <span className="text-[26px] mb-1" aria-hidden="true">{PRODUCTS[key].emoji}</span>
                     <span className="font-extrabold text-brand-dark">{PRODUCTS[key].name}</span>
                     <span className="text-[13px] font-semibold text-[#8A6E4B]">
                       {TEXT.step1From} {formatPrice(getMinPrice(key))}
@@ -549,7 +760,7 @@ export default function OrderForm() {
                         }}
                         className={`flex items-center justify-between gap-3 rounded-2xl px-5 py-4 text-left transition-colors ${cardClass(isSelected)}`}
                       >
-                        <span className="flex items-center gap-2.5 font-bold text-brand-dark">
+                        <span className="flex items-center gap-3 font-bold text-brand-dark">
                           <span className="text-lg" aria-hidden="true">{STYLES[key].emoji}</span>
                           {STYLES[key].name}
                         </span>
@@ -558,15 +769,31 @@ export default function OrderForm() {
                     );
                   })}
                 </div>
+                {product !== 'kit' && (
+                  <p className="flex items-center gap-2 text-[13px] text-brand-brown mt-4">
+                    <svg {...lineIconProps} strokeWidth={2.5} className="w-3.5 h-3.5 text-[#6B8F71] shrink-0">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                    {TEXT.apparelFeatures}
+                  </p>
+                )}
               </div>
             )}
 
-            {/* Size selector for hoodies */}
+            {colors && style && selectedColor && (
+              <ColorPicker colors={colors} value={selectedColor} onChange={setColorId} />
+            )}
+
             {needsSize && style && (
-              <div className="mb-2">
-                <h3 className="font-extrabold text-brand-dark mb-3.5">{TEXT.step1SelectSize}</h3>
+              <fieldset className="relative mb-2">
+                <legend className="font-extrabold text-brand-dark mb-3.5">
+                  {TEXT.step1SelectSize} <span className="font-semibold text-brand-brown">{size ?? ''}</span>
+                </legend>
+                <div className="absolute top-0 right-0">
+                  <SizeGuide />
+                </div>
                 <div className="flex flex-wrap gap-2.5">
-                  {SIZES.map((s) => {
+                  {SIZES.map(({ size: s }) => {
                     const isSelected = size === s;
                     return (
                       <button
@@ -574,22 +801,23 @@ export default function OrderForm() {
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => setSize(s)}
-                        className={`w-[52px] h-[52px] rounded-full border-2 text-sm font-extrabold transition-colors ${
-                          isSelected
-                            ? 'border-brand-orange bg-brand-orange text-white'
-                            : 'border-brand-tan bg-white text-brand-brown hover:border-brand-orange/60'
-                        }`}
+                        className={`w-[46px] h-[42px] rounded-xl bg-white text-sm font-extrabold text-[#3A2B22] transition-shadow ${pickerClass(isSelected)}`}
                       >
                         {s}
                       </button>
                     );
                   })}
                 </div>
-              </div>
+              </fieldset>
             )}
 
-            <div className="flex justify-end mt-7">
-              <button type="button" disabled={!canAdvanceStep1} onClick={() => setStep(2)} className={primaryBtn}>
+            <div className="flex justify-between items-center gap-4 mt-10">
+              <p className="text-xs text-brand-brown leading-relaxed">
+                {TEXT.donationPrefix} <strong className="text-brand-dark">{TEXT.donationAmount}</strong>
+                <br />
+                {TEXT.donationShelter}
+              </p>
+              <button type="button" disabled={!canAdvanceStep1} onClick={() => setStep(2)} className={`${submitBtn} shrink-0`}>
                 {TEXT.next}
               </button>
             </div>
@@ -604,52 +832,89 @@ export default function OrderForm() {
             </h2>
             <p className="text-sm text-brand-brown leading-relaxed mb-5">{photoHint}</p>
 
-            {needsSecondPhoto ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <UploadZone
-                  label={TEXT.photoLabelFace}
-                  preview={photoPreview}
-                  fileName={photo?.name}
-                  error={photoError}
-                  dragActive={dragCounter > 0}
-                  inputRef={fileInputRef}
-                  ariaLabel={TEXT.photoLabelFace}
-                  onFileChange={(file) => handleFile(file, 1)}
-                  onRemove={() => { setPhoto(null); setPhotoError(''); }}
-                  onDrop={(e) => handleDrop(e, 1)}
-                  onDragEnter={() => setDragCounter((c) => c + 1)}
-                  onDragLeave={() => setDragCounter((c) => Math.max(0, c - 1))}
-                />
-                <UploadZone
-                  label={TEXT.photoLabelPaw}
-                  preview={photo2Preview}
-                  fileName={photo2?.name}
-                  error={photo2Error}
-                  dragActive={dragCounter2 > 0}
-                  inputRef={file2InputRef}
-                  ariaLabel={TEXT.photoLabelPaw}
-                  onFileChange={(file) => handleFile(file, 2)}
-                  onRemove={() => { setPhoto2(null); setPhoto2Error(''); }}
-                  onDrop={(e) => handleDrop(e, 2)}
-                  onDragEnter={() => setDragCounter2((c) => c + 1)}
-                  onDragLeave={() => setDragCounter2((c) => Math.max(0, c - 1))}
-                />
+            {/* Tips come first so they're read before choosing a file. */}
+            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-5 items-start mb-7">
+              <PhotoTips />
+              <div>
+                {needsSecondPhoto ? (
+                    <div className="space-y-4">
+                      <UploadZone
+                        label={TEXT.photoLabelFace}
+                        preview={photoPreview}
+                        fileName={photo?.name}
+                        error={photoError}
+                        dragActive={dragCounter > 0}
+                        inputRef={fileInputRef}
+                        ariaLabel={TEXT.photoLabelFace}
+                        onFileChange={(file) => handleFile(file, 1)}
+                        onRemove={() => { setPhoto(null); setPhotoError(''); }}
+                        onDrop={(e) => handleDrop(e, 1)}
+                        onDragEnter={() => setDragCounter((c) => c + 1)}
+                        onDragLeave={() => setDragCounter((c) => Math.max(0, c - 1))}
+                      />
+                      <UploadZone
+                        label={TEXT.photoLabelPaw}
+                        preview={photo2Preview}
+                        fileName={photo2?.name}
+                        error={photo2Error}
+                        dragActive={dragCounter2 > 0}
+                        inputRef={file2InputRef}
+                        ariaLabel={TEXT.photoLabelPaw}
+                        onFileChange={(file) => handleFile(file, 2)}
+                        onRemove={() => { setPhoto2(null); setPhoto2Error(''); }}
+                        onDrop={(e) => handleDrop(e, 2)}
+                        onDragEnter={() => setDragCounter2((c) => c + 1)}
+                        onDragLeave={() => setDragCounter2((c) => Math.max(0, c - 1))}
+                      />
+                    </div>
+                  ) : (
+                    <UploadZone
+                      preview={photoPreview}
+                      fileName={photo?.name}
+                      error={photoError}
+                      dragActive={dragCounter > 0}
+                      inputRef={fileInputRef}
+                      ariaLabel={TEXT.step2Title}
+                      onFileChange={(file) => handleFile(file, 1)}
+                      onRemove={() => { setPhoto(null); setPhotoError(''); }}
+                      onDrop={(e) => handleDrop(e, 1)}
+                      onDragEnter={() => setDragCounter((c) => c + 1)}
+                      onDragLeave={() => setDragCounter((c) => Math.max(0, c - 1))}
+                    />
+                  )}
               </div>
-            ) : (
-              <UploadZone
-                preview={photoPreview}
-                fileName={photo?.name}
-                error={photoError}
-                dragActive={dragCounter > 0}
-                inputRef={fileInputRef}
-                ariaLabel={TEXT.step2Title}
-                onFileChange={(file) => handleFile(file, 1)}
-                onRemove={() => { setPhoto(null); setPhotoError(''); }}
-                onDrop={(e) => handleDrop(e, 1)}
-                onDragEnter={() => setDragCounter((c) => c + 1)}
-                onDragLeave={() => setDragCounter((c) => Math.max(0, c - 1))}
-              />
+            </div>
+
+            {isApparel && (
+              <div className="mb-7">
+                <label className="block text-sm font-extrabold text-brand-dark mb-1.5" htmlFor="pet-name">
+                  {TEXT.petNameLabel} <span className="text-brand-orange">*</span>
+                </label>
+                <input
+                  id="pet-name"
+                  type="text"
+                  value={petName}
+                  onChange={(e) => setPetName(e.target.value)}
+                  required
+                  aria-required="true"
+                  aria-describedby="pet-name-warning"
+                  maxLength={MAX_PET_NAME_LENGTH}
+                  autoComplete="off"
+                  className={inputClass}
+                />
+                <p id="pet-name-warning" className="text-sm text-[#C47A47] mt-1.5">{TEXT.petNameWarning}</p>
+              </div>
             )}
+
+            <div className="bg-[#F3EDE7] rounded-2xl px-5 py-4">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <span className="font-bold text-[#3A2B22]">{summaryLine}</span>
+                <span className="font-extrabold text-[#C47A47] whitespace-nowrap">
+                  {formatPrice(price)} <span className="text-sm font-semibold text-brand-brown">{TEXT.priceShipping}</span>
+                </span>
+              </div>
+              <p className="text-sm text-brand-brown mt-1.5">{TEXT.paymentLinkEta}</p>
+            </div>
 
             <div className="flex justify-between items-center mt-7">
               <button type="button" onClick={() => setStep(1)} className={backBtn}>
@@ -743,8 +1008,14 @@ export default function OrderForm() {
                 <div className="flex-1 min-w-0">
                   <div className="font-extrabold text-brand-dark">{summaryTitle}</div>
                   <div className="text-sm text-brand-brown mt-0.5">{summaryDetail}</div>
+                  {isApparel && petName.trim() && (
+                    <div className="text-sm text-brand-brown mt-0.5">“{petName.trim()}”</div>
+                  )}
                 </div>
-                <div className="text-lg font-extrabold text-brand-orange shrink-0">{formatPrice(price)}</div>
+                <div className="text-right shrink-0">
+                  <div className="text-lg font-extrabold text-brand-orange">{formatPrice(price)}</div>
+                  <div className="text-xs text-brand-brown">{TEXT.priceShipping}</div>
+                </div>
               </div>
             </div>
 
